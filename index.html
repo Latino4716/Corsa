@@ -1,0 +1,2491 @@
+<!DOCTYPE html>
+<html lang="it" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KineRun 10K — Programmazione Fisiologica & Riabilitazione Tendinea</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            clinical: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+              900: '#082f49',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-family: 'Inter', sans-serif;
+    }
+    .mono-num {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    @keyframes pulseRing {
+      0% { transform: scale(0.92); opacity: 0.9; }
+      50% { transform: scale(1.12); opacity: 0.4; }
+      100% { transform: scale(0.92); opacity: 0.9; }
+    }
+    .metronome-beat {
+      animation: pulseRing 0.35s ease-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-sky-600 selection:text-white">
+
+  <!-- TOP HEADER CLINICO -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between py-3.5 gap-3">
+        <!-- Brand & Clinical Tag -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-blue-700 flex items-center justify-center shadow-inner border border-sky-400/30">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h1 class="text-lg font-bold tracking-tight text-white">KineRun <span class="text-sky-400 font-mono">10K-PRO</span></h1>
+                <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-sky-950 text-sky-300 border border-sky-700/60">
+                  Protocollo Silbernagel / Malliaras
+                </span>
+              </div>
+              <p class="text-xs text-slate-400">Riatletizzazione 20 Settimane • Gastrocnemio Prossimale &amp; Neurodinamica Tibiale</p>
+            </div>
+          </div>
+
+          <!-- Mobile Week Badge -->
+          <div class="md:hidden flex items-center gap-2">
+            <span id="mobileWeekBadge" class="px-2.5 py-1 rounded-lg bg-slate-800 text-sky-400 font-mono text-xs font-semibold border border-slate-700">
+              Sett. 1/20
+            </span>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs & Backup Tools -->
+        <div class="flex items-center justify-between md:justify-end gap-2 overflow-x-auto pb-1 md:pb-0">
+          <nav class="flex items-center bg-slate-800/90 p-1 rounded-xl border border-slate-700/80 text-xs sm:text-sm">
+            <button onclick="switchTab('dashboard')" id="tabBtn-dashboard" class="tab-btn px-3 py-1.5 rounded-lg font-medium transition-all bg-sky-600 text-white shadow-sm whitespace-nowrap">
+              Dashboard &amp; Semaforo
+            </button>
+            <button onclick="switchTab('program')" id="tabBtn-program" class="tab-btn px-3 py-1.5 rounded-lg font-medium transition-all text-slate-300 hover:text-white whitespace-nowrap">
+              Piano 20 Settimane
+            </button>
+            <button onclick="switchTab('rehab')" id="tabBtn-rehab" class="tab-btn px-3 py-1.5 rounded-lg font-medium transition-all text-slate-300 hover:text-white whitespace-nowrap">
+              Protocollo Rehab &amp; Cadenza
+            </button>
+            <button onclick="switchTab('paces')" id="tabBtn-paces" class="tab-btn px-3 py-1.5 rounded-lg font-medium transition-all text-slate-300 hover:text-white whitespace-nowrap">
+              Zone &amp; VAM
+            </button>
+          </nav>
+
+          <!-- Data Backup Dropdown / Buttons -->
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button onclick="exportBackup()" title="Esporta Backup JSON" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+            </button>
+            <label title="Importa Backup JSON" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+              </svg>
+              <input type="file" id="importJsonInput" accept=".json" class="hidden" onchange="importBackup(event)" />
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- NOTIFICATION TOAST -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- =========================================================
+         TAB 1: DASHBOARD FISIOLOGICA & SEMAFORO DI CARICO TENDINEO
+         ========================================================= -->
+    <section id="tab-dashboard" class="space-y-6">
+
+      <!-- TOP CLINICAL STATUS BAR -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left 7 Cols: Traffic Light Autoregulation System -->
+        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+          <div class="p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+              <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-sky-700 bg-sky-50 border border-sky-200 px-2.5 py-0.5 rounded-full">
+                  Monitoraggio Meccanotrasduzione &amp; Neurodinamica
+                </span>
+                <h2 class="text-xl font-bold text-slate-900 mt-1.5">Semaforo Clinico di Carico a 24 Ore</h2>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-500">Settimana attiva:</span>
+                <select id="dashboardWeekSelect" onchange="changeActiveWeek(this.value)" class="bg-slate-100 border border-slate-300 text-slate-800 text-sm rounded-lg px-2.5 py-1 font-mono font-semibold focus:ring-2 focus:ring-sky-500 focus:outline-none">
+                </select>
+              </div>
+            </div>
+
+            <!-- Traffic Light Banner -->
+            <div id="trafficLightBox" class="rounded-xl p-4 sm:p-5 border-2 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-emerald-50/80 border-emerald-500">
+              <!-- Visual Semaphore Lights -->
+              <div class="flex sm:flex-col gap-2 bg-slate-900 p-2.5 rounded-xl border border-slate-700 shrink-0 self-center sm:self-auto">
+                <div id="light-green" class="w-6 h-6 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399] transition-all"></div>
+                <div id="light-yellow" class="w-6 h-6 rounded-full bg-amber-500/20 transition-all"></div>
+                <div id="light-red" class="w-6 h-6 rounded-full bg-rose-500/20 transition-all"></div>
+              </div>
+
+              <!-- Clinical Diagnosis & Action -->
+              <div class="flex-1 space-y-1.5">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span id="semaphoreStatusBadge" class="px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wide bg-emerald-600 text-white">
+                    VERDE • ADATTAMENTO FISIOLOGICO OTTIMALE
+                  </span>
+                  <span id="semaphoreLastNrsBadge" class="text-xs font-mono font-semibold text-slate-600 bg-white/80 px-2 py-0.5 rounded border border-slate-200">
+                    Ultimo Test 24h: NRS 1/10
+                  </span>
+                </div>
+                <h3 id="semaphoreHeadline" class="text-base font-bold text-slate-900">
+                  Carico tendineo ben tollerato: via libera alla progressione prevista.
+                </h3>
+                <p id="semaphorePrescription" class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                  La risposta al test mattutino (estensione completa del ginocchio + dorsiflessione attiva della caviglia) indica assenza di irritazione reattiva dei capi prossimali del gastrocnemio e normale scorrimento del nervo tibiale. Puoi procedere con il rapporto Corsa/Cammino programmato.
+                </p>
+              </div>
+            </div>
+
+            <!-- Morning Provocative Test Quick Check-in -->
+            <div class="mt-5 pt-5 border-t border-slate-100">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                <div>
+                  <h4 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Test Provocativo Mattutino a 24h (Estensione Ginocchio + Dorsiflessione)
+                  </h4>
+                  <p class="text-xs text-slate-500">
+                    Esegui a freddo appena sveglio: estendi il ginocchio portando la punta del piede verso la tibia. Valuta il fastidio posteriore (NRS 0–10).
+                  </p>
+                </div>
+                <span id="quickNrsValueDisplay" class="mono-num text-lg font-extrabold px-3 py-1 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 self-start sm:self-center">
+                  NRS: 1 / 10
+                </span>
+              </div>
+
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                <div class="flex-1">
+                  <input type="range" id="morningNrsSlider" min="0" max="10" step="1" value="1"
+                    oninput="updateMorningNrsPreview(this.value)"
+                    class="w-full h-2.5 bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-500 rounded-lg appearance-none cursor-pointer" />
+                  <div class="flex justify-between text-[11px] font-mono text-slate-500 mt-1 px-0.5">
+                    <span>0 (Nullo)</span>
+                    <span>1-2 (Verde: Ok)</span>
+                    <span>3-4 (Giallo: Cautela)</span>
+                    <span>5-7 (Rosso: Stop)</span>
+                    <span>8-10 (Acuto)</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <label class="flex items-center gap-1.5 text-xs text-slate-700 bg-slate-100 px-3 py-2 rounded-lg border border-slate-200 cursor-pointer select-none">
+                    <input type="checkbox" id="morningRigidityCheck" class="rounded text-sky-600 focus:ring-sky-500" />
+                    <span>Persiste &gt;24h</span>
+                  </label>
+                  <button onclick="recordMorningCheckin()" class="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition shadow-sm whitespace-nowrap">
+                    Registra Test 24h
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer Clinical Note -->
+          <div class="bg-slate-50 px-5 py-3 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+            <span><strong>Regola aurea:</strong> Fastidio tollerabile fino a 2/10 solo se rientra al valore basale entro 24 ore.</span>
+            <button onclick="switchTab('rehab')" class="text-sky-600 hover:text-sky-800 font-semibold inline-flex items-center gap-1">
+              Vai a Isometria Analgesica &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- Right 5 Cols: KPI Fisiologici Settimana Corrente -->
+        <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          
+          <!-- KPI 1: Fase & Settimana -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Stato Mesociclo</span>
+                <span id="kpiPhaseBadge" class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-sky-100 text-sky-800">Fase 1</span>
+              </div>
+              <div class="mt-2 flex items-baseline gap-2">
+                <span id="kpiCurrentWeek" class="text-2xl font-extrabold text-slate-900 mono-num">Settimana 1</span>
+                <span class="text-xs text-slate-400 font-mono">/ 20</span>
+              </div>
+              <p id="kpiPhaseTitle" class="text-xs text-slate-600 mt-1 font-medium">
+                Ricondizionamento tissutale e meccanotrasduzione (Run-Walk)
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100">
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-500">Progresso Globale 10K</span>
+                <span id="kpiTotalProgressPct" class="font-mono font-bold text-sky-700">0%</span>
+              </div>
+              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div id="kpiTotalProgressBar" class="h-full bg-sky-600 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI 2: Volume Chilometrico Settimanale -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Volume Settimanale</span>
+                <span class="text-[11px] font-mono text-slate-500">Regola &lt;10%</span>
+              </div>
+              <div class="mt-2 flex items-baseline gap-1.5">
+                <span id="kpiWeeklyKmActual" class="text-2xl font-extrabold text-slate-900 mono-num">0.0</span>
+                <span class="text-xs text-slate-500 font-mono">/ <span id="kpiWeeklyKmPlanned">11.5</span> km</span>
+              </div>
+              <p id="kpiWeeklySessionsDone" class="text-xs text-slate-600 mt-1">
+                0 di 5 sedute completate (Corsa + Rehab)
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100">
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-500">Aderenza Volume</span>
+                <span id="kpiWeeklyKmPct" class="font-mono font-bold text-emerald-700">0%</span>
+              </div>
+              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div id="kpiWeeklyKmBar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI 3: Carico Interno (sRPE = RPE x Minuti) -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Carico Interno (sRPE)</span>
+                <span class="text-[11px] font-mono bg-slate-100 text-slate-700 px-2 py-0.5 rounded">UA (RPE×min)</span>
+              </div>
+              <div class="mt-2 flex items-baseline gap-1.5">
+                <span id="kpiWeeklySrpe" class="text-2xl font-extrabold text-slate-900 mono-num">0</span>
+                <span class="text-xs text-slate-500 font-mono">Unità Arbitrarie</span>
+              </div>
+              <p id="kpiSrpeInterpretation" class="text-xs text-slate-600 mt-1">
+                Target settimanale stimato: <span id="kpiPlannedSrpe" class="font-mono font-semibold">320</span> UA
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <span class="text-slate-500">Rapporto Corsa/Cammino:</span>
+              <span id="kpiRunWalkRatio" class="font-mono font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded">2' C / 1' W × 9</span>
+            </div>
+          </div>
+
+          <!-- KPI 4: Trend Risposta Tendinea & Passo Target -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Media NRS 24h</span>
+                <span id="kpiPainTrendBadge" class="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">Stabile</span>
+              </div>
+              <div class="mt-2 flex items-baseline gap-2">
+                <span id="kpiAvgNrs24" class="text-2xl font-extrabold text-slate-900 mono-num">1.0</span>
+                <span class="text-xs text-slate-500 font-mono">/ 10 scala NRS</span>
+              </div>
+              <p class="text-xs text-slate-600 mt-1">
+                Cadenza consigliata: <span class="font-mono font-semibold text-sky-700">172–175 spm</span>
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+              <span class="text-slate-500">Fondo Lento (Z2):</span>
+              <span id="kpiCurrentZ2Pace" class="font-mono font-bold text-sky-700">6:15 – 6:30 /km</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- INTERACTIVE CHARTS & CURRENT WEEK SESSIONS PREVIEW -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left 7 Cols: Chart Volume, Carico Interno & Trend NRS 24h -->
+        <div class="lg:col-span-7 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+              <div>
+                <h3 class="text-base font-bold text-slate-900">Andamento Carico Esterno (km), sRPE e Dolore a 24h (20 Settimane)</h3>
+                <p class="text-xs text-slate-500">Confronto tra progressione volumetrica programmata, chilometri svolti e risposta tendinea NRS</p>
+              </div>
+              <div class="flex items-center gap-3 text-xs">
+                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-slate-200 inline-block border border-slate-300"></span> Km Previsti</span>
+                <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-sky-600 inline-block"></span> Km Svolti</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> NRS 24h</span>
+              </div>
+            </div>
+
+            <!-- Dynamic SVG Chart -->
+            <div class="w-full overflow-x-auto">
+              <div id="loadTrendChartContainer" class="min-w-[540px] h-64 relative">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Historical Morning Check-ins Log -->
+          <div class="mt-4 pt-4 border-t border-slate-100">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Ultime Valutazioni Mattutine a 24h (Test Estensione + Dorsiflessione)</span>
+              <button onclick="clearCheckinHistory()" class="text-[11px] text-slate-400 hover:text-rose-600 transition">Azzera storico test</button>
+            </div>
+            <div id="checkinHistoryList" class="flex gap-2 overflow-x-auto pb-1">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 5 Cols: Active Week Prescription & Quick Check -->
+        <div class="lg:col-span-5 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h3 id="activeWeekCardTitle" class="text-base font-bold text-slate-900">Sedute della Settimana 1</h3>
+                <p id="activeWeekCardSubtitle" class="text-xs text-slate-500">3 Uscite di Corsa + 2 Micro-sessioni Tendinee</p>
+              </div>
+              <button onclick="switchTab('program')" class="text-xs font-semibold text-sky-600 hover:text-sky-800">
+                Vedi tutte le 20 sett. &rarr;
+              </button>
+            </div>
+
+            <!-- List of 5 sessions of the active week -->
+            <div id="dashboardWeekSessionsList" class="space-y-2.5">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 bg-sky-50/70 -mx-5 -mb-5 sm:-mx-6 sm:-mb-6 p-4 rounded-b-2xl border-t-sky-100">
+            <div class="flex items-start gap-2.5">
+              <svg class="w-5 h-5 text-sky-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <p id="activeWeekClinicalTip" class="text-xs text-slate-700 leading-relaxed">
+                <strong>Focus Biomeccanico Sett. 1:</strong> Mantieni una cadenza di ~172-175 passi/min per appoggiare il piede sotto il baricentro, evitando l'overstriding che mette in trazione eccentrica i gemelli e il nervo tibiale a ginocchio esteso.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- =========================================================
+         TAB 2: PROGRAMMAZIONE 20 SETTIMANE (3 FASI FISIOLOGICHE)
+         ========================================================= -->
+    <section id="tab-program" class="hidden space-y-6">
+      
+      <!-- Phase Filter & Overview Banner -->
+      <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Programmazione Periodizzata 20 Settimane — Obiettivo 10 km (Marzo)</h2>
+            <p class="text-xs sm:text-sm text-slate-600 mt-1">
+              3 sedute di corsa + 2 micro-sessioni di condizionamento tendineo/neurodinamico a settimana. Clicca su qualsiasi seduta per registrare km, RPE, NRS intraseduta e NRS a 24h.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="filterProgramPhase('all')" id="phaseFilter-all" class="phase-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white transition">
+              Tutte (Sett. 1–20)
+            </button>
+            <button onclick="filterProgramPhase(1)" id="phaseFilter-1" class="phase-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+              Fase 1: Run-Walk (1–6)
+            </button>
+            <button onclick="filterProgramPhase(2)" id="phaseFilter-2" class="phase-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+              Fase 2: Sviluppo Z2 (7–14)
+            </button>
+            <button onclick="filterProgramPhase(3)" id="phaseFilter-3" class="phase-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+              Fase 3: Specifica 10K (15–20)
+            </button>
+          </div>
+        </div>
+
+        <!-- 3 Phases Physiological Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5 pt-5 border-t border-slate-100">
+          <div class="p-3.5 rounded-xl bg-sky-50/70 border border-sky-200/80">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase text-sky-800">Fase 1 • Settimane 1–6</span>
+              <span class="text-[11px] font-mono bg-white px-2 py-0.5 rounded border border-sky-200 text-sky-700">Scarico: Sett. 4</span>
+            </div>
+            <h4 class="text-sm font-bold text-slate-900 mt-1">Ricondizionamento &amp; Meccanotrasduzione</h4>
+            <p class="text-xs text-slate-600 mt-1">
+              Transizione progressiva Run-Walk-Run (da 2'C/1'W×9 fino a 24' continui). Dissipa l'accumulo di deformazione viscoelastica e stimola la sintesi di collagene I con isometria in range neutro.
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-indigo-50/70 border border-indigo-200/80">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase text-indigo-800">Fase 2 • Settimane 7–14</span>
+              <span class="text-[11px] font-mono bg-white px-2 py-0.5 rounded border border-indigo-200 text-indigo-700">Scarico: Sett. 8, 12</span>
+            </div>
+            <h4 class="text-sm font-bold text-slate-900 mt-1">Sviluppo Aerobico (Z2) &amp; Stiffness HSR</h4>
+            <p class="text-xs text-slate-600 mt-1">
+              Incremento prudente (&lt;10%/settimana) della corsa continua da 28' a 50'. Introduzione di Heavy Slow Resistance (3s salita / 3s discesa) e brevi variazioni a Fondo Medio.
+            </p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase text-emerald-800">Fase 3 • Settimane 15–20</span>
+              <span class="text-[11px] font-mono bg-white px-2 py-0.5 rounded border border-emerald-200 text-emerald-700">Tapering: Sett. 20</span>
+            </div>
+            <h4 class="text-sm font-bold text-slate-900 mt-1">Consolidamento 10 km &amp; Gara</h4>
+            <p class="text-xs text-slate-600 mt-1">
+              Lungo domenicale fino a 10.5–11 km, frazioni a Ritmo Gara (~5:30/km modulabile) e mantenimento dell'elasticità tendinea prima dello scarico pre-gara della settimana 20.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 20 Weeks Accordion / Grid Container -->
+      <div id="weeksProgramContainer" class="space-y-4">
+        <!-- Populated by JS -->
+      </div>
+
+    </section>
+
+    <!-- =========================================================
+         TAB 3: PROTOCOLLO BIOMECCANICO, RIABILITATIVO & METRONOMO
+         ========================================================= -->
+    <section id="tab-rehab" class="hidden space-y-6">
+
+      <!-- Clinical Anatomy & Differential Rationale Banner -->
+      <div class="bg-slate-900 text-white rounded-2xl p-5 sm:p-6 border border-slate-800 shadow-sm">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-8 space-y-2">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+              Razionale Anatomo-Funzionale • Fossa Poplitea
+            </span>
+            <h2 class="text-xl sm:text-2xl font-bold text-white">
+              Perché l'estensione del ginocchio associata a dorsiflessione evoca il sintomo?
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              I <strong class="text-white">capi prossimali del gastrocnemio</strong> (muscolo biarticolare) originano sopra i condili femorali e si inseriscono sul calcagno: l'estensione del ginocchio allontana l'origine prossimale mentre la dorsiflessione della caviglia traziona l'inserzione distale, generando il massimo stress tensivo longitudinale. Contemporaneamente, questa identica posizione mette in tensione l'asse del <strong class="text-white">nervo tibiale</strong> che attraversa la fossa poplitea prima di passare sotto l'arcata del soleo.
+            </p>
+            <div class="pt-2 flex flex-wrap gap-3 text-xs">
+              <div class="bg-rose-950/80 border border-rose-700/70 text-rose-200 px-3 py-2 rounded-xl">
+                <strong class="text-rose-400 uppercase block">Cosa Evitare (Fase 1-2):</strong>
+                Stretching aggressivo del polpaccio a ginocchio esteso ed esercizi eccentrici col tallone che scende sotto il gradino (deficit).
+              </div>
+              <div class="bg-emerald-950/80 border border-emerald-700/70 text-emerald-200 px-3 py-2 rounded-xl">
+                <strong class="text-emerald-400 uppercase block">Strategia Terapeutica:</strong>
+                Carico alto in range neutro/plantiflessione (isometria + HSR su pavimento piano) e scorrimento neurodinamico ("Slider").
+              </div>
+            </div>
+          </div>
+
+          <!-- Biomechanical Vector Diagram SVG -->
+          <div class="lg:col-span-4 bg-slate-800/90 rounded-xl p-4 border border-slate-700 flex flex-col items-center">
+            <span class="text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-2">Schema Vettori di Tensione Posteriore</span>
+            <svg viewBox="0 0 260 190" class="w-full max-w-[250px] h-auto">
+              <!-- Background Grid -->
+              <line x1="20" y1="165" x2="240" y2="165" stroke="#475569" stroke-width="2" stroke-dasharray="4 4"/>
+              
+              <!-- Left Mini Diagram: Prohibited Deficit + Extension -->
+              <g transform="translate(15, 10)">
+                <rect x="0" y="0" width="105" height="145" rx="8" fill="#1e293b" stroke="#f43f5e" stroke-width="1.5"/>
+                <text x="52" y="16" text-anchor="middle" fill="#fda4af" font-size="9" font-weight="bold">VIETATO: DEFICIT</text>
+                <!-- Step block -->
+                <rect x="45" y="115" width="45" height="22" fill="#334155"/>
+                <!-- Femur & Tibia extended -->
+                <line x1="48" y1="30" x2="48" y2="72" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round"/>
+                <line x1="48" y1="72" x2="48" y2="118" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round"/>
+                <!-- Foot in forced dorsiflexion (heel dropped) -->
+                <line x1="38" y1="126" x2="72" y2="112" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/>
+                <!-- Red Stress Highlight at Posterior Knee -->
+                <circle cx="43" cy="72" r="8" fill="#f43f5e" fill-opacity="0.4"/>
+                <circle cx="43" cy="72" r="3.5" fill="#f43f5e"/>
+                <!-- Tension line -->
+                <path d="M43 66 L41 124" stroke="#f43f5e" stroke-width="2" stroke-dasharray="2 2"/>
+                <text x="52" y="140" text-anchor="middle" fill="#f87171" font-size="7.5">Trazione Max Condili</text>
+              </g>
+
+              <!-- Right Mini Diagram: Correct Neutral Floor Isometric -->
+              <g transform="translate(135, 10)">
+                <rect x="0" y="0" width="105" height="145" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1.5"/>
+                <text x="52" y="16" text-anchor="middle" fill="#6ee7b7" font-size="9" font-weight="bold">CORRETTO: PIANO</text>
+                <!-- Flat floor -->
+                <line x1="15" y1="122" x2="90" y2="122" stroke="#64748b" stroke-width="3"/>
+                <!-- Femur & Tibia extended, lifted in plantarflexion -->
+                <line x1="50" y1="28" x2="50" y2="68" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round"/>
+                <line x1="50" y1="68" x2="50" y2="108" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round"/>
+                <!-- Foot in plantarflexion (heel raised above floor) -->
+                <line x1="46" y1="108" x2="75" y2="120" stroke="#cbd5e1" stroke-width="4" stroke-linecap="round"/>
+                <!-- Green Safe Load Highlight -->
+                <circle cx="45" cy="68" r="7" fill="#10b981" fill-opacity="0.35"/>
+                <circle cx="45" cy="68" r="3" fill="#10b981"/>
+                <path d="M45 64 L46 108" stroke="#10b981" stroke-width="2.5"/>
+                <text x="52" y="140" text-anchor="middle" fill="#34d399" font-size="7.5">Carico Senza Trazione</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 REHABILITATION STAGES + INTERACTIVE TIMERS -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- STADIO 1: ISOMETRIA ANALGESICA -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-sky-100 text-sky-800">Stadio 1 • Settimane 1–6 (e Semaforo Rosso)</span>
+              <span class="text-xs font-mono font-semibold text-slate-500">5 × 45s</span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900">Isometria Analgesica in Range Neutro</h3>
+            <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+              <strong>Esecuzione:</strong> In piedi su pavimento rigorosamente piano (MAI su gradino in deficit), ginocchio esteso ma non bloccato in iperestensione. Solleva il tallone di 3–4 cm verso la plantiflessione e mantieni la contrazione isometrica per <strong>45 secondi al ~70% MVC</strong> (bipodalico con sovraccarico o monopodalico assistito).
+            </p>
+            <div class="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs space-y-1 text-slate-700">
+              <div>• <strong>Volume:</strong> 5 serie × 45 secondi</div>
+              <div>• <strong>Recupero:</strong> 2 minuti tra le serie</div>
+              <div>• <strong>Effetto Fisiologico:</strong> Inibizione corticale del dolore (effetto analgesico per 45-60 min) e riallineamento del collagene senza stress tensivo sull'origine condilare.</div>
+            </div>
+          </div>
+
+          <!-- Interactive Timer for Stage 1 -->
+          <div class="mt-5 pt-4 border-t border-slate-100">
+            <div class="flex items-center justify-between mb-2">
+              <span id="isoTimerStatus" class="text-xs font-bold uppercase text-sky-700">Pronto: Serie 1 di 5 (45s Lavoro)</span>
+              <span id="isoTimerDisplay" class="mono-num text-xl font-extrabold text-slate-900">00:45</span>
+            </div>
+            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-3">
+              <div id="isoTimerBar" class="h-full bg-sky-600 transition-all duration-300" style="width: 100%"></div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="toggleIsoTimer()" id="isoTimerBtn" class="flex-1 py-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition">
+                Avvia Timer 5×45s
+              </button>
+              <button onclick="resetIsoTimer()" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STADIO 2: HEAVY SLOW RESISTANCE (HSR) -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-indigo-100 text-indigo-800">Stadio 2 • Settimane 5–14</span>
+              <span class="text-xs font-mono font-semibold text-slate-500">3s ↑ / 3s ↓</span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900">Heavy Slow Resistance (HSR) Isotonica</h3>
+            <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+              <strong>Esecuzione:</strong> Sollevamenti lenti partendo da pavimento piano (zero dorsiflessione forzata). <strong>3 secondi</strong> per salire in plantiflessione e <strong>3 secondi</strong> per scendere sfiorando il suolo. Esegui sia a ginocchio esteso (focus gastrocnemio) sia a ginocchio flesso a 30° (focus soleo), abbinato a <strong>Ponte Glutei/Ischiocrurali</strong> a leve progressive.
+            </p>
+            <div class="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs space-y-1 text-slate-700">
+              <div>• <strong>Calf HSR:</strong> 3–4 serie × 10–12 rip (6s a ripetizione)</div>
+              <div>• <strong>Bridge Ischiocrurali:</strong> 3 × 10 rip controllate</div>
+              <div>• <strong>Effetto Fisiologico:</strong> Incrementa la sintesi di fibrille di collagene e la stiffness della matrice tendinea eliminando i picchi balistici.</div>
+            </div>
+          </div>
+
+          <!-- Interactive Visual Pacer 3s Up / 3s Down -->
+          <div class="mt-5 pt-4 border-t border-slate-100">
+            <div class="flex items-center justify-between mb-2">
+              <span id="hsrPacerLabel" class="text-xs font-bold uppercase text-indigo-700">Guida Tempo HSR (3s Concentrica / 3s Eccentrica)</span>
+              <span id="hsrRepCounter" class="mono-num text-sm font-bold text-slate-700">Rip: 0 / 10</span>
+            </div>
+            <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-3 relative">
+              <div id="hsrPacerBar" class="h-full bg-indigo-600 transition-all duration-100" style="width: 0%"></div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="toggleHsrPacer()" id="hsrPacerBtn" class="flex-1 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">
+                Avvia Pacer 3s/3s
+              </button>
+              <button onclick="resetHsrPacer()" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- STADIO 3: NEURODINAMICA "SLIDER" & STIFFNESS -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-emerald-100 text-emerald-800">Stadio 3 • Tutte le Fasi + Specifica</span>
+              <span class="text-xs font-mono font-semibold text-slate-500">2 × 15 Slider</span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900">Neurodinamica "Slider" Nervo Tibiale</h3>
+            <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+              <strong>Tecnica Slider (Scorrimento senza tensione):</strong> Seduto sul bordo di una sedia.
+              <br>1) Quando <strong>estendi il ginocchio</strong>, porta contemporaneamente il piede in <strong>plantiflessione</strong> (punta in avanti: tendi a livello del ginocchio ma detensioni alla caviglia).
+              <br>2) Quando <strong>fletti il ginocchio</strong>, porta la caviglia in <strong>dorsiflessione</strong> (punta verso la tibia).
+            </p>
+            <div class="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs space-y-1 text-slate-700">
+              <div>• <strong>Dosaggio Slider:</strong> 2 serie × 15 oscillazioni fluide e indolori</div>
+              <div>• <strong>Fase 3 Elastica:</strong> Pogo jumps bipodalici a bassa ampiezza (stiffness ciclo allungamento-accorciamento rapido)</div>
+              <div>• <strong>Effetto:</strong> Drena l'edema intraneurale e migliora lo scorrimento del nervo tibiale nella fossa poplitea.</div>
+            </div>
+          </div>
+
+          <!-- Interactive Slider Visual Guide -->
+          <div class="mt-5 pt-4 border-t border-slate-100">
+            <div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
+              <div>
+                <span class="text-[11px] font-bold uppercase text-emerald-800 block"> Coordinazione Slider Attiva:</span>
+                <span id="sliderCoordText" class="text-xs font-semibold text-slate-800">Ginocchio ESTESO &rarr; Piede in PLANTIFLESSIONE</span>
+              </div>
+              <button onclick="toggleSliderAnimation()" id="sliderAnimBtn" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shrink-0">
+                Simula Ritmo
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CADENCE METRONOME (WEB AUDIO API) -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div class="lg:col-span-7 space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-100 text-sky-800">Web Audio API • Prevenzione Overstriding</span>
+              <span class="text-xs font-mono text-slate-500">Target Ottimale: 172–175 spm</span>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900">Metronomo Biomeccanico di Cadenza</h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Una cadenza bassa (&lt;162 passi/min) comporta inevitabilmente un aumento della lunghezza del passo (<em>overstriding</em>), facendo atterrare il tallone molto avanti rispetto al baricentro con il <strong>ginocchio esteso e la caviglia in dorsiflessione</strong> — esattamente la posizione provocativa per il tuo ginocchio posteriore. Aumentare la frequenza a <strong>172–175 passi al minuto</strong> porta l'appoggio sotto il bacino con il ginocchio leggermente flesso (~15-20°), abbattendo il picco di forza frenante ed eccentrica sui gemelli.
+            </p>
+          </div>
+
+          <!-- Metronome Interactive Controls -->
+          <div class="lg:col-span-5 bg-slate-900 text-white p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div id="metronomeVisualOrb" class="w-12 h-12 rounded-2xl bg-sky-500/20 border-2 border-sky-400 flex items-center justify-center transition-transform">
+                  <span id="metronomeFootSide" class="font-mono text-xs font-bold text-sky-300">SX/DX</span>
+                </div>
+                <div>
+                  <div class="flex items-baseline gap-1.5">
+                    <span id="metronomeBpmDisplay" class="mono-num text-3xl font-extrabold text-white">174</span>
+                    <span class="text-xs font-mono text-sky-400">passi/min (spm)</span>
+                  </div>
+                  <p class="text-[11px] text-slate-400">Ascolta 60s prima di partire per sincronizzare il passo</p>
+                </div>
+              </div>
+
+              <button onclick="toggleMetronome()" id="metronomePlayBtn" class="px-5 py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-sm transition shadow-lg flex items-center gap-2">
+                <svg id="metronomePlayIcon" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                </svg>
+                <span id="metronomePlayText">Avvia</span>
+              </button>
+            </div>
+
+            <div>
+              <input type="range" id="metronomeSlider" min="155" max="190" step="1" value="174"
+                oninput="updateMetronomeBpm(this.value)"
+                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-400" />
+              <div class="flex justify-between text-[11px] font-mono text-slate-400 mt-1.5">
+                <span>155 (Lunga leva)</span>
+                <span class="text-sky-400 font-bold">172–175 (Target Protettivo)</span>
+                <span>190 (Alta freq.)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- =========================================================
+         TAB 4: CALCOLATORE DINAMICO DEI RITMI E STIMA VAM
+         ========================================================= -->
+    <section id="tab-paces" class="hidden space-y-6">
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left 5 Cols: Input & VAM Estimator -->
+        <div class="lg:col-span-5 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+          <div>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-100 text-sky-800">Fisiologia dell'Esercizio</span>
+            <h2 class="text-xl font-bold text-slate-900 mt-1.5">Calcolatore Dinamico Ritmi &amp; VAM</h2>
+            <p class="text-xs text-slate-600 mt-1">
+              Imposta il tuo tempo obiettivo sui 10 km (default 55:00 &rarr; 5:30/km) oppure il passo di riferimento. L'algoritmo aggiorna in tempo reale tutte le zone metaboliche e i passi consigliati nelle 20 settimane.
+            </p>
+          </div>
+
+          <div class="space-y-4 pt-2 border-t border-slate-100">
+            <div>
+              <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">
+                Tempo Obiettivo / Riferimento 10 km (Minuti : Secondi)
+              </label>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <span class="text-[11px] text-slate-500 block mb-1">Minuti (es. 55)</span>
+                  <input type="number" id="target10kMin" min="35" max="80" value="55" onchange="recalculatePaces()"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-base font-bold text-slate-900 focus:ring-2 focus:ring-sky-500 focus:outline-none" />
+                </div>
+                <div>
+                  <span class="text-[11px] text-slate-500 block mb-1">Secondi (0-59)</span>
+                  <input type="number" id="target10kSec" min="0" max="59" value="0" onchange="recalculatePaces()"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-base font-bold text-slate-900 focus:ring-2 focus:ring-sky-500 focus:outline-none" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Preset Quick Buttons -->
+            <div>
+              <span class="text-[11px] font-semibold text-slate-500 block mb-1.5">Preset Prudenti post-infortunio:</span>
+              <div class="flex flex-wrap gap-2">
+                <button onclick="setPreset10k(60, 0)" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-mono font-semibold text-slate-700 transition">
+                  60:00 (6:00/km)
+                </button>
+                <button onclick="setPreset10k(57, 30)" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-mono font-semibold text-slate-700 transition">
+                  57:30 (5:45/km)
+                </button>
+                <button onclick="setPreset10k(55, 0)" class="px-3 py-1.5 rounded-lg bg-sky-100 hover:bg-sky-200 text-xs font-mono font-bold text-sky-800 border border-sky-300 transition">
+                  55:00 (5:30/km • Default)
+                </button>
+                <button onclick="setPreset10k(52, 30)" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-mono font-semibold text-slate-700 transition">
+                  52:30 (5:15/km)
+                </button>
+              </div>
+            </div>
+
+            <!-- Estimated Physiological Metrics Box -->
+            <div class="p-4 rounded-xl bg-slate-900 text-white space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                <span class="text-xs text-slate-400">Ritmo Gara 10 km (RG):</span>
+                <span id="calcRgDisplay" class="mono-num text-lg font-extrabold text-sky-400">5:30 /km</span>
+              </div>
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                <span class="text-xs text-slate-400">VAM Stimata (Velocità Aerobica Max):</span>
+                <span id="calcVamDisplay" class="mono-num text-base font-bold text-white">12.1 km/h (4:57/km)</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-slate-400">VO2max Stimato (Formula di Léger):</span>
+                <span id="calcVo2Display" class="mono-num text-base font-bold text-emerald-400">42.4 ml/kg/min</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 7 Cols: Training Zones Table -->
+        <div class="lg:col-span-7 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900 mb-1">Zone Metaboliche e Biomeccaniche Personalizzate</h3>
+            <p class="text-xs text-slate-500 mb-4">
+              Nelle prime 10 settimane l'85-90% del volume di corsa deve svolgersi tra Zona 1 e Zona 2 per massimizzare la capillarizzazione periferica mantenendo ridotte le forze di reazione al suolo (GRF).
+            </p>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-200 text-[11px] font-bold uppercase text-slate-500">
+                    <th class="py-2.5 pr-3">Zona / Mezzo</th>
+                    <th class="py-2.5 px-3">Passo (/km)</th>
+                    <th class="py-2.5 px-3">RPE</th>
+                    <th class="py-2.5 pl-3">Obiettivo Fisiologico &amp; Tendineo</th>
+                  </tr>
+                </thead>
+                <tbody id="pacesTableBody" class="divide-y divide-slate-100 text-xs sm:text-sm">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            <span>I passi calcolati sono automaticamente sincronizzati con le schede della Programmazione 20 Settimane.</span>
+            <button onclick="switchTab('program')" class="text-sky-600 font-bold hover:underline">Vai al Piano &rarr;</button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- =========================================================
+       MODAL: DETTAGLIO E REGISTRAZIONE SEDUTA
+       ========================================================= -->
+  <div id="sessionModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
+        <div>
+          <span id="modalSessionWeekBadge" class="text-[11px] font-mono uppercase tracking-wider text-sky-400">Settimana 1 • Corsa 1</span>
+          <h3 id="modalSessionTitle" class="text-base font-bold text-white mt-0.5">Run-Walk 2'C / 1'W × 9</h3>
+        </div>
+        <button onclick="closeSessionModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 leading-relaxed" id="modalSessionDescription">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Distanza Effettiva (km)</label>
+            <input type="number" step="0.1" min="0" max="30" id="modalInputKm"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-sm font-bold text-slate-900 focus:ring-2 focus:ring-sky-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Durata Totale (minuti)</label>
+            <input type="number" step="1" min="1" max="180" id="modalInputMin"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-sm font-bold text-slate-900 focus:ring-2 focus:ring-sky-500 focus:outline-none" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">RPE (1–10)</label>
+            <input type="number" step="1" min="1" max="10" id="modalInputRpe"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-sm font-bold text-slate-900 focus:ring-2 focus:ring-sky-500 focus:outline-none" />
+            <span class="text-[10px] text-slate-500">Sforzo percepito</span>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">NRS Intraseduta</label>
+            <input type="number" step="1" min="0" max="10" id="modalInputNrsDuring"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-sm font-bold text-slate-900 focus:ring-2 focus:ring-sky-500 focus:outline-none" />
+            <span class="text-[10px] text-slate-500">Fastidio in corsa (0-10)</span>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">NRS a 24 Ore</label>
+            <input type="number" step="1" min="0" max="10" id="modalInputNrs24h"
+              class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-sm font-bold text-slate-900 focus:ring-2 focus:ring-sky-500 focus:outline-none" />
+            <span class="text-[10px] text-slate-500">Test mattutino (0-10)</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Note Biomeccaniche / Sensazioni</label>
+          <textarea id="modalInputNotes" rows="2" placeholder="Es. Ottima cadenza a 174 spm, nessun fastidio in estensione al mattino seguente..."
+            class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs text-slate-800 focus:ring-2 focus:ring-sky-500 focus:outline-none"></textarea>
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="modalInputCompleted" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500" />
+            <span class="text-sm font-bold text-slate-800">Segna seduta come Completata</span>
+          </label>
+          <span id="modalCalculatedSrpe" class="text-xs font-mono text-slate-500">Carico sRPE: 84 UA</span>
+        </div>
+      </div>
+
+      <div class="bg-slate-50 px-5 py-3.5 border-t border-slate-200 flex items-center justify-end gap-2">
+        <button onclick="closeSessionModal()" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold transition">
+          Annulla
+        </button>
+        <button onclick="saveSessionFromModal()" class="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition shadow-sm">
+          Salva Registrazione
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+      <div>
+        <strong>KineRun 10K-PRO</strong> • Modello di Riatletizzazione Progressiva basato sul monitoraggio del dolore a 24h (Silbernagel et al. / Malliaras et al.)
+      </div>
+      <div class="flex items-center gap-4">
+        <button onclick="openResetModal()" class="text-rose-600 hover:text-rose-800 font-semibold">
+          Ripristina Dati Iniziali
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL CONFERMA RESET -->
+  <div id="resetConfirmModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 border border-slate-200 shadow-xl space-y-4">
+      <h3 class="text-lg font-bold text-slate-900">Ripristinare tutti i dati del programma?</h3>
+      <p class="text-xs sm:text-sm text-slate-600">
+        Questa operazione azzererà le sedute completate e i test mattutini salvati nel browser, riportando il piano allo stato iniziale (con la tua prima uscita di 28' già pre-caricata come riferimento). Consigliamo di esportare prima un backup JSON.
+      </p>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeResetModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold">
+          Annulla
+        </button>
+        <button onclick="confirmFullReset()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold">
+          Conferma Ripristino
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       JAVASCRIPT APPLICATION LOGIC & PHYSIOLOGICAL ENGINE
+       ========================================================= -->
+  <script>
+    const STORAGE_KEY = 'kinerun_10k_rehab_v1';
+
+    // Blueprint of the 20 weeks (3 run sessions + 2 tendon/neurodynamic sessions per week)
+    const WEEKS_BLUEPRINT = [
+      // FASE 1: Settimane 1-6 (Ricondizionamento tissutale e meccanotrasduzione)
+      {
+        week: 1, phase: 1, isDeload: false,
+        title: "Riadattamento Meccanico Iniziale (2' Corsa / 1' Cammino)",
+        ratioLabel: "2' C / 1' W × 9-10",
+        clinicalFocus: "Frammentare il carico ciclico per dissipare la deformazione viscosa sui capi prossimali del gastrocnemio. Cadenza 172-175 spm.",
+        runs: [
+          { code: "C1", title: "Run-Walk 2' Corsa / 1' Cammino × 9", km: 3.9, min: 27, rpe: 3, zone: "Z1-Z2", desc: "Alterna 2 minuti di corsa fluida in Z2 (passo conversazionale, appoggio sotto il baricentro) a 1 minuto di cammino attivo. Evita allunghi finali." },
+          { code: "C2", title: "Run-Walk 2' Corsa / 1' Cammino × 9", km: 3.9, min: 27, rpe: 3, zone: "Z1-Z2", desc: "Ripeti il frazionato 2'/1' × 9 volte. Concentrati sul non estendere completamente il ginocchio in fase di contatto iniziale." },
+          { code: "C3", title: "Run-Walk 2' Corsa / 1' Cammino × 10", km: 4.3, min: 30, rpe: 3, zone: "Z1-Z2", desc: "Seduta del weekend: 10 frazioni (20 min totali di corsa effettiva + 10 min di cammino). Monitora la risposta a 24h la domenica mattina." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 1: Isometria Calf in Piano (5×45s) + Slider Tibiale", min: 18, rpe: 3, desc: "5×45s Calf raise isometrico a ginocchio esteso partendo dal pavimento piano (NO deficit su gradino) + 2×15 Slider neurodinamici del nervo tibiale." },
+          { code: "R2", title: "Stadio 1: Isometria Calf + Ponte Glutei Bipodalico", min: 18, rpe: 3, desc: "5×45s Isometria in range neutro/plantiflessione + 3×12 Ponte glutei lento + 2×15 Slider nervo tibiale." }
+        ]
+      },
+      {
+        week: 2, phase: 1, isDeload: false,
+        title: "Consolidamento Frazionato (3' Corsa / 1' Cammino)",
+        ratioLabel: "3' C / 1' W × 7-8",
+        clinicalFocus: "Estensione della frazione continua da 2 a 3 minuti solo se il Semaforo a 24h della Settimana 1 è rimasto VERDE (NRS ≤ 2).",
+        runs: [
+          { code: "C1", title: "Run-Walk 3' Corsa / 1' Cammino × 7", km: 4.1, min: 28, rpe: 3, zone: "Z2", desc: "7 ripetizioni da 3' di corsa facile in Z2 + 1' di cammino (21' di corsa effettiva). Mantieni passo corto e frequente." },
+          { code: "C2", title: "Run-Walk 3' Corsa / 1' Cammino × 7", km: 4.1, min: 28, rpe: 3, zone: "Z2", desc: "Seconda uscita settimanale 3'/1' × 7. Verifica assenza di rigidità posteriore nei primi minuti." },
+          { code: "C3", title: "Run-Walk 3' Corsa / 1' Cammino × 8", km: 4.7, min: 32, rpe: 4, zone: "Z2", desc: "8 frazioni da 3' corsa / 1' cammino (24' di corsa effettiva su 32' totali)." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 1: Isometria Analgesica (5×45s) + Slider", min: 18, rpe: 3, desc: "5×45s Calf isometrico su piano neutro al 70% MVC + 2×15 Slider neurodinamici." },
+          { code: "R2", title: "Stadio 1: Isometria + Core & Ponte Ischiocrurali", min: 20, rpe: 3, desc: "5×45s Isometria polpaccio + 3×10 Ponte glutei con focus su catena posteriore senza crampi." }
+        ]
+      },
+      {
+        week: 3, phase: 1, isDeload: false,
+        title: "Progressione Meccanotrasduttiva (4' Corsa / 1' Cammino)",
+        ratioLabel: "4' C / 1' W × 6-7",
+        clinicalFocus: "Aumento del tempo sotto tensione aerobica continua a 4 minuti per blocco, riducendo il numero di pause.",
+        runs: [
+          { code: "C1", title: "Run-Walk 4' Corsa / 1' Cammino × 6", km: 4.5, min: 30, rpe: 4, zone: "Z2", desc: "6 blocchi da 4' corsa Z2 + 1' cammino (24' di corsa netta). Cura la postura eretta senza piegarti in avanti." },
+          { code: "C2", title: "Run-Walk 4' Corsa / 1' Cammino × 6", km: 4.5, min: 30, rpe: 4, zone: "Z2", desc: "Ripeti 4'/1' × 6 su terreno pianeggiante e regolare (evita discese o sterrato sconnesso)." },
+          { code: "C3", title: "Run-Walk 4' Corsa / 1' Cammino × 7", km: 5.2, min: 35, rpe: 4, zone: "Z2", desc: "Uscita lunga della Fase 1 iniziale: 7 blocchi (28' di corsa effettiva)." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 1-2: Isometria 4×45s + Intro HSR Calf in Piano", min: 20, rpe: 4, desc: "4×45s Isometria + 2×10 sollevamenti lenti (3s salita, 3s discesa) su pavimento piano." },
+          { code: "R2", title: "Stadio 1-2: Slider Nervo Tibiale + Ponte Monopodalico Assistito", min: 20, rpe: 4, desc: "2×15 Slider neurodinamici + 3×10 Calf lento a ginocchio flesso (soleo) + 3×10 Bridge." }
+        ]
+      },
+      {
+        week: 4, phase: 1, isDeload: true,
+        title: "Settimana di Scarico e Consolidamento Connettivale",
+        ratioLabel: "3' C / 1' W × 6-7 (Scarico)",
+        clinicalFocus: "Riduzione programmata del volume (-20%) per consentire il rimodellamento netto della matrice di collagene di tipo I.",
+        runs: [
+          { code: "C1", title: "Scarico: Run-Walk 3' Corsa / 1' Cammino × 6", km: 3.6, min: 24, rpe: 3, zone: "Z1-Z2", desc: "Seduta rigenerante: 6 frazioni leggere per facilitare il recupero tissutale." },
+          { code: "C2", title: "Scarico: Run-Walk 4' Corsa / 1' Cammino × 5", km: 3.7, min: 25, rpe: 3, zone: "Z1-Z2", desc: "20 minuti di corsa netta frazionata, senza alcuna forzatura di passo." },
+          { code: "C3", title: "Scarico: Run-Walk 4' Corsa / 1' Cammino × 6", km: 4.4, min: 30, rpe: 3, zone: "Z2", desc: "Chiusura della settimana di scarico con 30 minuti totali molto confortevoli." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 1: Isometria Analgesica Pura + Slider", min: 15, rpe: 3, desc: "4×45s Isometria polpaccio in piano + 2×15 Slider nervo tibiale." },
+          { code: "R2", title: "Mobilità Anchi/Caviglia & Isometria Leggera", min: 15, rpe: 2, desc: "3×45s Isometria + esercizi di stabilità monopodalica a ginocchio morbido." }
+        ]
+      },
+      {
+        week: 5, phase: 1, isDeload: false,
+        title: "Transizione a Blocchi Lunghi (6'-8' Corsa / 1' Cammino)",
+        ratioLabel: "6'-8' C / 1' W",
+        clinicalFocus: "Passaggio verso la continuità aerobica riducendo le pause di cammino a 3-4 totali nella seduta.",
+        runs: [
+          { code: "C1", title: "Run-Walk 6' Corsa / 1' Cammino × 4", km: 4.5, min: 28, rpe: 4, zone: "Z2", desc: "4 blocchi da 6 minuti di corsa continua + 1' di cammino (24' di corsa netta)." },
+          { code: "C2", title: "Run-Walk 7' Corsa / 1' Cammino × 4", km: 5.0, min: 32, rpe: 4, zone: "Z2", desc: "4 blocchi da 7 minuti di corsa continua + 1' di cammino (28' di corsa netta)." },
+          { code: "C3", title: "Run-Walk 8' Corsa / 1' Cammino × 4", km: 5.6, min: 36, rpe: 4, zone: "Z2", desc: "4 frazioni da 8 minuti: il tendine si abitua a cicli prolungati di allungamento-accorciamento." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 2: HSR Calf Ginocchio Esteso e Flesso (3×10)", min: 22, rpe: 4, desc: "3×10 HSR (3s su / 3s giù su piano neutro) a ginocchio esteso + 3×10 a ginocchio flesso + Slider." },
+          { code: "R2", title: "Stadio 2: HSR + Ponte Ischiocrurali a Leva Lunga", min: 22, rpe: 4, desc: "3×10 Ponte glutei con talloni più distanti dal bacino (senza dolore popliteo) + 3×45s Isometria." }
+        ]
+      },
+      {
+        week: 6, phase: 1, isDeload: false,
+        title: "Sblocco della Corsa Continua (22-25 Minuti)",
+        ratioLabel: "12' C &rarr; 25' Continui",
+        clinicalFocus: "Completamento della Fase 1: prima seduta di corsa interamente continua di 24-25 minuti in Zona 2.",
+        runs: [
+          { code: "C1", title: "Run-Walk 10' Corsa / 1' Cammino × 3", km: 5.1, min: 33, rpe: 4, zone: "Z2", desc: "3 blocchi da 10 minuti di corsa intervallati da 1 solo minuto di cammino." },
+          { code: "C2", title: "Run-Walk 12' Corsa / 1' Cammino × 2 + 6' Corsa", km: 5.0, min: 32, rpe: 4, zone: "Z2", desc: "Due frazioni lunghe da 12' più 6' finali." },
+          { code: "C3", title: "Test Fine Fase 1: 25 Minuti Corsa Continua Z2", km: 4.2, min: 25, rpe: 4, zone: "Z2", desc: "Prima uscita di 25 minuti senza pause di cammino a ritmo Fondo Lento Z2 costante. Registra NRS a 24h!" }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 2: HSR Calf Completo (3×12) + Slider", min: 22, rpe: 4, desc: "3×12 HSR lento su piano orizzontale + 2×15 Slider nervo tibiale." },
+          { code: "R2", title: "Stadio 2: Forza Catena Posteriore & Core", min: 22, rpe: 4, desc: "3×12 Calf Soleo + 3×10 Ponte ischiocrurali + 3×45s Isometria analgesica post-lavoro." }
+        ]
+      },
+
+      // FASE 2: Settimane 7-14 (Sviluppo aerobico fondamentale Z2 e incremento stiffness)
+      {
+        week: 7, phase: 2, isDeload: false,
+        title: "Consolidamento Corsa Continua in Zona 2 (28-32 min)",
+        ratioLabel: "Corsa Continua 28'-32'",
+        clinicalFocus: "Inizio Fase 2: stabilizzazione della corsa continua con incrementi volumetrici < 10% settimanale.",
+        runs: [
+          { code: "C1", title: "Fondo Lento Continuo Z2 (28 min)", km: 4.5, min: 28, rpe: 4, zone: "Z2", desc: "28 minuti continui a passo Z2. Cura la cadenza (~174 spm) e il rilassamento delle spalle." },
+          { code: "C2", title: "Fondo Lento Z2 (25 min) + 4 Allunghi Tecnici Fluidi", km: 4.4, min: 28, rpe: 4, zone: "Z2", desc: "25' Z2 seguiti da 4 allunghi di 50 metri non massimali (80% velocità, recupero 60s camminando) per stimolare l'elasticità." },
+          { code: "C3", title: "Lungo Aerobico Continuo Z2 (32 min)", km: 5.2, min: 32, rpe: 4, zone: "Z2", desc: "32 minuti continui in piano a ritmo conversazionale." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 2: HSR Monopodalico Assistito (4×10)", min: 25, rpe: 5, desc: "4×10 HSR (3s/3s) su pavimento piano aumentando gradualmente il carico sul lato interessato." },
+          { code: "R2", title: "Stadio 2: HSR Soleo + Ponte Ischiocrurali + Slider", min: 25, rpe: 4, desc: "3×12 Calf a ginocchio flesso con manubrio/zaino + 3×10 Bridge + 2×15 Slider." }
+        ]
+      },
+      {
+        week: 8, phase: 2, isDeload: true,
+        title: "Settimana di Scarico Preventivo (Assorbimento Corsa Continua)",
+        ratioLabel: "Corsa Continua 22'-26' (Scarico)",
+        clinicalFocus: "Scarico dopo il passaggio alla corsa continua per azzerare qualsiasi micro-fatica accumulata nella fossa poplitea.",
+        runs: [
+          { code: "C1", title: "Fondo Lento Rigenerante Z1-Z2 (22 min)", km: 3.5, min: 22, rpe: 3, zone: "Z1-Z2", desc: "22 minuti leggerissimi per rigenerazione attiva." },
+          { code: "C2", title: "Fondo Lento Z2 (24 min)", km: 3.8, min: 24, rpe: 3, zone: "Z2", desc: "24 minuti continui agili a cadenza 174 spm." },
+          { code: "C3", title: "Fondo Lento Z2 (26 min)", km: 4.2, min: 26, rpe: 3, zone: "Z2", desc: "26 minuti in pieno controllo respiratorio e meccanico." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 1-2: Richiamo Isometrico + HSR Leggero", min: 18, rpe: 3, desc: "4×45s Isometria analgesica + 2×10 HSR lento." },
+          { code: "R2", title: "Neurodinamica Slider & Core Stability", min: 18, rpe: 3, desc: "3×15 Slider nervo tibiale + esercizi di controllo pelvico monopodalico." }
+        ]
+      },
+      {
+        week: 9, phase: 2, isDeload: false,
+        title: "Espansione Cilindrata Aerobica (Fino a 36 min)",
+        ratioLabel: "Corsa Continua 30'-36'",
+        clinicalFocus: "Superamento dei 5.5 km nella seduta singola mantenendo invariato lo stress articolare grazie alla stiffness muscolo-tendinea.",
+        runs: [
+          { code: "C1", title: "Fondo Lento Z2 (30 min)", km: 4.8, min: 30, rpe: 4, zone: "Z2", desc: "30 minuti di corsa continua in Z2." },
+          { code: "C2", title: "Fondo Lento (26 min) + 5 Allunghi 60m Fluidi", km: 4.7, min: 30, rpe: 4, zone: "Z2", desc: "26' continui + 5×60m fluidi con recupero completo di 60s al passo." },
+          { code: "C3", title: "Lungo Aerobico Z2 (36 min)", km: 5.8, min: 36, rpe: 4, zone: "Z2", desc: "36 minuti continui (~5.8 km) a passo Z2 costante." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 2: HSR Monopodalico su Piano (4×10)", min: 25, rpe: 5, desc: "4×10 sollevamenti lenti (3s/3s) monopodalici su pavimento piano." },
+          { code: "R2", title: "Stadio 2: Rinforzo Ischiocrurali & Soleo", min: 25, rpe: 5, desc: "3×12 Calf a ginocchio flesso + 3×10 Ponte monopodalico + Slider." }
+        ]
+      },
+      {
+        week: 10, phase: 2, isDeload: false,
+        title: "Introduzione al Fondo Medio Controllato (Z3) & 40 Minuti",
+        ratioLabel: "Continua 30'-40' + Z3",
+        clinicalFocus: "Primo stimolo qualitativo aerobico (Fondo Medio Z3) inserito in brevi frazioni centrali a caldo.",
+        runs: [
+          { code: "C1", title: "Fondo Lento Z2 (32 min)", km: 5.1, min: 32, rpe: 4, zone: "Z2", desc: "32 minuti continui a ritmo Z2." },
+          { code: "C2", title: "20' Z2 + 2 × 4' Fondo Medio (Z3, rec 2' Z1) + 4' Z2", km: 5.5, min: 34, rpe: 5, zone: "Z2-Z3", desc: "Dopo 20' di riscaldamento in Z2, inserisci 2 tratti da 4 minuti a Fondo Medio (Z3, passo controllato) senza perdere l'alta cadenza." },
+          { code: "C3", title: "Lungo Aerobico Z2 (40 min)", km: 6.4, min: 40, rpe: 5, zone: "Z2", desc: "Traguardo dei 40 minuti continui in Zona 2 (~6.4 km)." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 2: HSR Calf Pesante + Isometria Finale", min: 25, rpe: 5, desc: "4×8 HSR lento con sovraccarico su piano neutro + 2×45s Isometria finale." },
+          { code: "R2", title: "Stadio 2-3: Slider Tibiale + Introduzione Stiffness Bipodalica", min: 22, rpe: 4, desc: "2×15 Slider + 3×20 piccoli molleggi bipodalici (pogo in place) a bassa ampiezza senza tallone a terra." }
+        ]
+      },
+      {
+        week: 11, phase: 2, isDeload: false,
+        title: "Sviluppo Resistenza Aerobica (Fino a 44 min / 7 km)",
+        ratioLabel: "Continua 34'-44'",
+        clinicalFocus: "Incremento progressivo della durata del lungo domenicale fino a ~7 km totali.",
+        runs: [
+          { code: "C1", title: "Fondo Lento Z2 (34 min)", km: 5.5, min: 34, rpe: 4, zone: "Z2", desc: "34 minuti di corsa continua aerobica." },
+          { code: "C2", title: "18' Z2 + 2 × 6' Fondo Medio (Z3, rec 2' Z1) + 4' Z2", km: 5.9, min: 36, rpe: 5, zone: "Z2-Z3", desc: "12 minuti totali in Zona 3 divisi in due blocchi da 6 minuti." },
+          { code: "C3", title: "Lungo Aerobico Z2 (44 min)", km: 7.0, min: 44, rpe: 5, zone: "Z2", desc: "44 minuti continui (~7.0 km) a passo Z2 costante." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 2-3: HSR (3×10) + Pogo Stiffness (3×25)", min: 25, rpe: 5, desc: "Mantenimento forza lenta HSR + riattivazione del ciclo allungamento-accorciamento rapido a piccolissima escursione." },
+          { code: "R2", title: "Stadio 2: Catena Cinetica Posteriore & Slider", min: 22, rpe: 4, desc: "3×10 Ponte monopodalico + 3×12 Calf Soleo + 2×15 Slider." }
+        ]
+      },
+      {
+        week: 12, phase: 2, isDeload: true,
+        title: "Secondo Scarico del Mesociclo (Settimana 12)",
+        ratioLabel: "Continua 28'-34' (Scarico)",
+        clinicalFocus: "Settimana rigenerativa prima dell'ultimo blocco di costruzione aerobica.",
+        runs: [
+          { code: "C1", title: "Fondo Lento Rigenerante Z1-Z2 (28 min)", km: 4.4, min: 28, rpe: 3, zone: "Z1-Z2", desc: "Corsa facile e decontratta di 28 minuti." },
+          { code: "C2", title: "Fondo Lento Z2 (30 min) + 4 Allunghi", km: 4.9, min: 32, rpe: 3, zone: "Z2", desc: "30 minuti facili + 4 allunghi sciolti." },
+          { code: "C3", title: "Fondo Lento Z2 (34 min)", km: 5.4, min: 34, rpe: 4, zone: "Z2", desc: "Uscita domenicale ridotta a 34 minuti per supercompensazione." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 1-2: Isometria Analgesica + HSR Moderato", min: 18, rpe: 3, desc: "3×45s Isometria + 2×10 HSR lento." },
+          { code: "R2", title: "Neurodinamica Slider & Mobilità Attiva", min: 18, rpe: 3, desc: "2×15 Slider nervo tibiale + stabilità monopodalica." }
+        ]
+      },
+      {
+        week: 13, phase: 2, isDeload: false,
+        title: "Consolidamento Fondo Medio e Lungo da 48 Minuti",
+        ratioLabel: "Continua 36'-48'",
+        clinicalFocus: "Avvicinamento agli 8 km nella seduta lunga domenicale.",
+        runs: [
+          { code: "C1", title: "Fondo Lento Z2 (36 min)", km: 5.8, min: 36, rpe: 4, zone: "Z2", desc: "36 minuti di corsa continua in Zona 2." },
+          { code: "C2", title: "15' Z2 + 2 × 8' Fondo Medio (Z3, rec 2' Z1) + 5' Z2", km: 6.3, min: 38, rpe: 6, zone: "Z2-Z3", desc: "Due frazioni da 8 minuti a Fondo Medio (Z3) curando l'appoggio reattivo sotto il bacino." },
+          { code: "C3", title: "Lungo Aerobico Z2 (48 min)", km: 7.7, min: 48, rpe: 5, zone: "Z2", desc: "48 minuti continui (~7.7 km) a ritmo Z2." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 2-3: HSR (3×10) + Stiffness Elastica", min: 25, rpe: 5, desc: "3×10 HSR gastrocnemio/soleo + 3×30 piccoli balzi elastici bipodalici." },
+          { code: "R2", title: "Stadio 2: Forza Ischiocrurali/Glutei & Slider", min: 22, rpe: 4, desc: "3×10 Bridge monopodalico + 3×45s Isometria + Slider." }
+        ]
+      },
+      {
+        week: 14, phase: 2, isDeload: false,
+        title: "Completamento Fase 2: Lungo di 52 Minuti (8.3 km)",
+        ratioLabel: "Continua 38'-52'",
+        clinicalFocus: "Chiusura della Fase di sviluppo aerobico fondamentale con oltre 8 km continui nelle gambe.",
+        runs: [
+          { code: "C1", title: "Fondo Lento Z2 (38 min)", km: 6.1, min: 38, rpe: 4, zone: "Z2", desc: "38 minuti costanti in Zona 2." },
+          { code: "C2", title: "15' Z2 + 15' Progressivo (da Z2 a Z3) + 8' Z1", km: 6.3, min: 38, rpe: 6, zone: "Z2-Z3", desc: "Seduta progressiva controllata senza mai scendere sotto i 172 spm." },
+          { code: "C3", title: "Lungo Aerobico Z2 (52 min)", km: 8.3, min: 52, rpe: 5, zone: "Z2", desc: "52 minuti continui (~8.3 km). Verifica attentamente il Semaforo a 24h prima di entrare in Fase 3." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 2-3: HSR + Pogo Stiffness", min: 25, rpe: 5, desc: "3×10 HSR + 3×30 molleggi reattivi in range neutro." },
+          { code: "R2", title: "Stadio 2: Mantenimento Catena Posteriore & Slider", min: 22, rpe: 4, desc: "3×10 Bridge + 3×10 Calf Soleo + 2×15 Slider." }
+        ]
+      },
+
+      // FASE 3: Settimane 15-20 (Consolidamento specifico 10 km e Tapering)
+      {
+        week: 15, phase: 3, isDeload: false,
+        title: "Ingresso in Fase Specifica: Frazioni a Ritmo Gara (RG)",
+        ratioLabel: "Specifica 10K • Lungo 9 km",
+        clinicalFocus: "Introduzione prudente del Ritmo Gara 10 km (~5:30/km o target personalizzato) in frazioni brevi con recupero attivo.",
+        runs: [
+          { code: "C1", title: "Fondo Lento Z2 (40 min)", km: 6.4, min: 40, rpe: 4, zone: "Z2", desc: "40 minuti di corsa rigenerante/aerobica in Z2." },
+          { code: "C2", title: "20' Z2 + 4 × 1 km a Ritmo Gara 10K (rec 2'30\" Z1) + 5' Z1", km: 7.8, min: 47, rpe: 6, zone: "RG (Z4)", desc: "4 ripetute da 1000m al passo obiettivo dei 10 km (senza mai forzare oltre il passo gara!). Recupero di corsa leggerissima." },
+          { code: "C3", title: "Lungo Aerobico Z2 (56 min • ~9.0 km)", km: 9.0, min: 56, rpe: 5, zone: "Z2", desc: "56 minuti continui (~9.0 km) interamente in Zona 2." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 3: Mantenimento HSR (3×8) + Isometria Analgesica", min: 22, rpe: 4, desc: "In Fase 3 riduciamo il volume degli esercizi di forza mantenendo l'intensità per non affaticare il polpaccio prima dei lavori specifici." },
+          { code: "R2", title: "Stadio 3: Slider Nervo Tibiale + Stiffness", min: 20, rpe: 4, desc: "2×15 Slider + 3×45s Isometria in range neutro + 2×8 Bridge." }
+        ]
+      },
+      {
+        week: 16, phase: 3, isDeload: true,
+        title: "Scarico Intermedio pre-Picco Volumetrico",
+        ratioLabel: "Scarico Attivo (Lungo 7.5 km)",
+        clinicalFocus: "Settimana di assimilazione dei primi lavori a Ritmo Gara.",
+        runs: [
+          { code: "C1", title: "Fondo Lento Z1-Z2 (32 min)", km: 5.1, min: 32, rpe: 3, zone: "Z1-Z2", desc: "32 minuti molto sciolti." },
+          { code: "C2", title: "20' Z2 + 5 × 2' a Ritmo Gara (rec 2' Z1) + 5' Z1", km: 6.4, min: 39, rpe: 5, zone: "RG", desc: "Richiamo neuromuscolare brillante ma poco tassante del passo gara." },
+          { code: "C3", title: "Lungo Contenuto Z2 (46 min • ~7.5 km)", km: 7.5, min: 46, rpe: 4, zone: "Z2", desc: "46 minuti continui facili." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 1-3: Isometria Analgesica (4×45s) + Slider", min: 18, rpe: 3, desc: "Focus sul recupero tendineo e scorrimento neurodinamico." },
+          { code: "R2", title: "Stadio 2: HSR Leggero (2×10) + Core", min: 18, rpe: 3, desc: "2×10 HSR gastrocnemio/soleo + stabilità bacino." }
+        ]
+      },
+      {
+        week: 17, phase: 3, isDeload: false,
+        title: "Raggiungimento dei 10 km in Allenamento (Lungo Z2)",
+        ratioLabel: "Specifica 10K • Lungo 10 km",
+        clinicalFocus: "Prima copertura della distanza di 10 km in allenamento a ritmo Fondo Lento Z2, garantendo piena fiducia psicologica e meccanica.",
+        runs: [
+          { code: "C1", title: "Fondo Lento Z2 (40 min)", km: 6.4, min: 40, rpe: 4, zone: "Z2", desc: "40 minuti continui in Zona 2." },
+          { code: "C2", title: "18' Z2 + 3 × 1.5 km a Ritmo Gara (rec 3' Z1) + 5' Z1", km: 8.2, min: 49, rpe: 6, zone: "RG", desc: "3 frazioni da 1500m a passo gara 10 km con cadenza 174-176 spm." },
+          { code: "C3", title: "Lungo Specifico: 10.0 km in Zona 2 (~62 min)", km: 10.0, min: 62, rpe: 6, zone: "Z2", desc: "Copertura completa dei 10 km a ritmo Fondo Lento Z2 (~62 minuti). Idratati bene e valuta il test a 24h il giorno successivo." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 3: HSR Mantenimento (3×8) + Isometria", min: 20, rpe: 4, desc: "3×8 HSR su piano neutro + 3×45s Isometria." },
+          { code: "R2", title: "Stadio 3: Slider Nervo Tibiale + Ponte Glutei", min: 18, rpe: 3, desc: "2×15 Slider + 2×10 Ponte glutei + detensionamento miofasciale delicato." }
+        ]
+      },
+      {
+        week: 18, phase: 3, isDeload: false,
+        title: "Picco Specifico: 3 × 2 km a Ritmo Gara & Lungo 10.5 km",
+        ratioLabel: "Picco Specifica • 10.5 km",
+        clinicalFocus: "Settimana di massimo carico specifico dell'intero piano di 20 settimane (a 2 settimane dalla gara).",
+        runs: [
+          { code: "C1", title: "Fondo Lento Z2 (40 min)", km: 6.4, min: 40, rpe: 4, zone: "Z2", desc: "40 minuti di corsa rigenerante." },
+          { code: "C2", title: "15' Z2 + 3 × 2 km a Ritmo Gara 10K (rec 3' Z1) + 5' Z1", km: 9.0, min: 53, rpe: 7, zone: "RG", desc: "Seduta chiave per il passo gara: 3×2000m a RG (~5:30/km). Mantieni una meccanica fluida senza irrigidire la caviglia." },
+          { code: "C3", title: "Lungo Aerobico Z2 (65 min • ~10.5 km)", km: 10.5, min: 65, rpe: 6, zone: "Z2", desc: "Ultimo lungo sopra la distanza di gara (10.5 km in Z2)." }
+        ],
+        rehab: [
+          { code: "R1", title: "Stadio 3: Isometria Analgesica (4×45s) + HSR (2×8)", min: 20, rpe: 4, desc: "Mantenimento della capacità di carico senza generare DOMS ai polpacci." },
+          { code: "R2", title: "Stadio 3: Slider Neurodinamici + Riattivazione", min: 15, rpe: 3, desc: "2×15 Slider nervo tibiale + 3×45s Isometria." }
+        ]
+      },
+      {
+        week: 19, phase: 3, isDeload: true,
+        title: "Pre-Tapering: Riduzione Volume (-25%) e Brillantezza",
+        ratioLabel: "Pre-Tapering • Rifinitura",
+        clinicalFocus: "Calo deciso del chilometraggio mantenendo brevi richiami a Ritmo Gara per massimizzare la freschezza neuromuscolare.",
+        runs: [
+          { code: "C1", title: "Fondo Lento Z2 (35 min)", km: 5.6, min: 35, rpe: 4, zone: "Z2", desc: "35 minuti facili." },
+          { code: "C2", title: "15' Z2 + 4 × 1 km a Ritmo Gara (rec 2'30\" Z1) + 5' Z1", km: 7.4, min: 44, rpe: 5, zone: "RG", desc: "4×1000m a Ritmo Gara sentendo il passo facile, economico e controllato." },
+          { code: "C3", title: "Medio-Lungo Brilliante Z2 (45 min • ~7.3 km)", km: 7.3, min: 45, rpe: 4, zone: "Z2", desc: "45 minuti in Zona 2 a una settimana dalla 10 km." }
+        ],
+        rehab: [
+          { code: "R1", title: "Tapering Rehab: Isometria Analgesica (4×45s) + Slider", min: 15, rpe: 3, desc: "Sospensione dei carichi isotonici pesanti: solo isometria tonificante e neurodinamica." },
+          { code: "R2", title: "Tapering Rehab: Slider & Mobilità", min: 15, rpe: 2, desc: "2×15 Slider nervo tibiale + 3×45s Isometria a ginocchio esteso in piano." }
+        ]
+      },
+      {
+        week: 20, phase: 3, isDeload: true,
+        title: "Settimana Gara: Tapering Finale & 10 km di Marzo!",
+        ratioLabel: "GARA 10 KM!",
+        clinicalFocus: "Supercompensazione completa: tendine fresco, glicogeno muscolare saturo e partenza prudente nei primi 2 km di gara.",
+        runs: [
+          { code: "C1", title: "Martedì: 25' Z2 + 3 × 1' a Ritmo Gara (rec 2')", km: 4.8, min: 30, rpe: 3, zone: "Z2 / RG", desc: "Sgambata di scarico con 3 brevi variazioni di 1 minuto al passo gara." },
+          { code: "C2", title: "Giovedì/Venerdì: Attivazione Pre-Gara 20' Z1-Z2 + 4 Allunghi", km: 3.5, min: 22, rpe: 2, zone: "Z1-Z2", desc: "20 minuti leggerissimi per tenere attivo il tono miotendineo." },
+          { code: "C3", title: "DOMENICA: GARA 10 KM (Obiettivo ~55:00)", km: 10.0, min: 55, rpe: 8, zone: "GARA 10K", desc: "Riscaldamento 12' + 3×30s isometria polpaccio pre-partenza. Corri i primi 3 km a ritmo controllato e cadenza ~174 spm, poi stabilizzati sul Ritmo Gara fino al traguardo!" }
+        ],
+        rehab: [
+          { code: "R1", title: "Mercoledì: Isometria Tonica Analgesica (3×40s) + Slider", min: 12, rpe: 2, desc: "3×40s Isometria in piano neutro + 2×12 Slider nervo tibiale." },
+          { code: "R2", title: "Sabato Vigilia: 3×30s Isometria di Attivazione Tendinea", min: 10, rpe: 2, desc: "Breve attivazione isometrica per ottimizzare la stiffness e l'analgesia prima della gara." }
+        ]
+      }
+    ];
+
+    // Global Application State
+    let appState = {
+      activeWeek: 1,
+      target10kMinutes: 55,
+      target10kSeconds: 0,
+      phaseFilter: 'all',
+      morningCheckins: [],
+      sessionsData: {} // Keyed by "W{week}_{code}" -> { completed, actualKm, actualMin, rpe, nrsDuring, nrs24h, notes }
+    };
+
+    let currentEditingSessionKey = null;
+
+    // Initialize or Load State from localStorage
+    function initApp() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          appState = { ...appState, ...parsed };
+        } catch (e) {
+          console.error("Errore lettura localStorage, inizializzo default:", e);
+          seedInitialDefaultState();
+        }
+      } else {
+        seedInitialDefaultState();
+      }
+
+      populateWeekSelector();
+      document.getElementById('target10kMin').value = appState.target10kMinutes || 55;
+      document.getElementById('target10kSec').value = appState.target10kSeconds || 0;
+
+      renderAll();
+    }
+
+    // Seed with the user's real session from last week (2' run / 1' walk ~4 km in <28 min)
+    function seedInitialDefaultState() {
+      appState = {
+        activeWeek: 1,
+        target10kMinutes: 55,
+        target10kSeconds: 0,
+        phaseFilter: 'all',
+        morningCheckins: [
+          {
+            date: "Base Iniziale (2'C/1'W)",
+            nrs: 1,
+            persists: false,
+            week: 1
+          }
+        ],
+        sessionsData: {
+          "W1_C1": {
+            completed: true,
+            actualKm: 3.9,
+            actualMin: 27,
+            rpe: 3,
+            nrsDuring: 1,
+            nrs24h: 1,
+            notes: "Prima uscita di riferimento svolta: 2' corsa / 1' cammino per quasi 4 km in meno di 28 minuti. Fastidio posteriore minimo."
+          }
+        }
+      };
+      saveState();
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        console.error("Impossibile salvare in localStorage:", e);
+      }
+    }
+
+    // Tab Navigation
+    function switchTab(tabId) {
+      const tabs = ['dashboard', 'program', 'rehab', 'paces'];
+      tabs.forEach(t => {
+        const section = document.getElementById(`tab-${t}`);
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (t === tabId) {
+          section.classList.remove('hidden');
+          btn.className = "tab-btn px-3 py-1.5 rounded-lg font-medium transition-all bg-sky-600 text-white shadow-sm whitespace-nowrap";
+        } else {
+          section.classList.add('hidden');
+          btn.className = "tab-btn px-3 py-1.5 rounded-lg font-medium transition-all text-slate-300 hover:text-white whitespace-nowrap";
+        }
+      });
+      if (tabId === 'dashboard') {
+        renderLoadTrendChart();
+      }
+    }
+
+    function populateWeekSelector() {
+      const sel = document.getElementById('dashboardWeekSelect');
+      sel.innerHTML = '';
+      WEEKS_BLUEPRINT.forEach(w => {
+        const opt = document.createElement('option');
+        opt.value = w.week;
+        opt.textContent = `Settimana ${w.week} (Fase ${w.phase}${w.isDeload ? ' • Scarico' : ''})`;
+        if (w.week === Number(appState.activeWeek)) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+
+    function changeActiveWeek(weekNum) {
+      appState.activeWeek = Number(weekNum);
+      saveState();
+      renderAll();
+    }
+
+    // Pace formatting helper (seconds per km -> "M:SS")
+    function formatPace(secPerKm) {
+      const m = Math.floor(secPerKm / 60);
+      const s = Math.round(secPerKm % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function getCalculatedPaces() {
+      const min = Number(appState.target10kMinutes) || 55;
+      const sec = Number(appState.target10kSeconds) || 0;
+      const totalSec = (min * 60) + sec;
+      const rgSecPerKm = totalSec / 10; // e.g., 330s = 5:30/km
+
+      // VAM estimated assuming 10k race pace is ~88% of VAM for recreational runners
+      const rgSpeedKmh = 3600 / rgSecPerKm;
+      const vamKmh = rgSpeedKmh / 0.875;
+      const vamSecPerKm = 3600 / vamKmh;
+      const vo2max = (vamKmh * 3.5);
+
+      return {
+        rgSec: rgSecPerKm,
+        rgFormatted: `${formatPace(rgSecPerKm)} /km`,
+        vamKmh: vamKmh.toFixed(1),
+        vamPace: `${formatPace(vamSecPerKm)}/km`,
+        vo2max: vo2max.toFixed(1),
+        z1Range: `${formatPace(rgSecPerKm + 65)} – ${formatPace(rgSecPerKm + 90)} /km`,
+        z2Range: `${formatPace(rgSecPerKm + 42)} – ${formatPace(rgSecPerKm + 62)} /km`,
+        z3Range: `${formatPace(rgSecPerKm + 18)} – ${formatPace(rgSecPerKm + 32)} /km`,
+        rgRange: `${formatPace(rgSecPerKm - 3)} – ${formatPace(rgSecPerKm + 5)} /km`
+      };
+    }
+
+    // Get merged session object (blueprint + user logged values)
+    function getSessionObject(weekNum, sessionBlueprint, isRun) {
+      const key = `W${weekNum}_${sessionBlueprint.code}`;
+      const saved = appState.sessionsData[key] || {};
+      const plannedKm = isRun ? sessionBlueprint.km : 0;
+      const plannedMin = sessionBlueprint.min;
+      const plannedRpe = sessionBlueprint.rpe;
+
+      return {
+        key,
+        week: weekNum,
+        isRun,
+        code: sessionBlueprint.code,
+        title: sessionBlueprint.title,
+        desc: sessionBlueprint.desc,
+        zone: sessionBlueprint.zone || 'Rehab',
+        plannedKm,
+        plannedMin,
+        plannedRpe,
+        completed: !!saved.completed,
+        actualKm: saved.actualKm !== undefined ? Number(saved.actualKm) : plannedKm,
+        actualMin: saved.actualMin !== undefined ? Number(saved.actualMin) : plannedMin,
+        rpe: saved.rpe !== undefined ? Number(saved.rpe) : plannedRpe,
+        nrsDuring: saved.nrsDuring !== undefined ? Number(saved.nrsDuring) : 1,
+        nrs24h: saved.nrs24h !== undefined ? Number(saved.nrs24h) : 1,
+        notes: saved.notes || ''
+      };
+    }
+
+    // Autoregulation Traffic Light Evaluation (Silbernagel / Malliaras model)
+    function evaluateClinicalTrafficLight() {
+      // Check latest morning check-in OR latest completed session's 24h NRS
+      let latestNrs = 1;
+      let persists = false;
+
+      if (appState.morningCheckins && appState.morningCheckins.length > 0) {
+        const last = appState.morningCheckins[appState.morningCheckins.length - 1];
+        latestNrs = Number(last.nrs);
+        persists = !!last.persists;
+      }
+
+      if (latestNrs >= 5 || persists) {
+        return {
+          status: 'RED',
+          nrs: latestNrs,
+          persists,
+          badge: 'ROSSO • SOVRACCARICO REATTIVO / IRRITAZIONE NEURODINAMICA',
+          headline: 'Eccesso di deformazione viscoelastica o sensibilizzazione del nervo tibiale: regredire di 1 step.',
+          prescription: 'Il fastidio al test provocativo mattutino (estensione ginocchio + dorsiflessione) supera la soglia di sicurezza (NRS ≥ 5 o persistenza > 24h). Sospendi per 48h la corsa, esegui oggi 5×45s di Isometria Analgesica su piano neutro + 2×15 Slider del nervo tibiale, e alla ripresa scala al rapporto Corsa/Cammino della settimana precedente.'
+        };
+      } else if (latestNrs >= 3) {
+        return {
+          status: 'YELLOW',
+          nrs: latestNrs,
+          persists,
+          badge: 'GIALLO • CARICO DI CONFINE (ZONA DI ATTENZIONE)',
+          headline: 'Lieve reattività tendinea a 24 ore: congela la progressione volumetrica per questa settimana.',
+          prescription: 'Un valore NRS di 3–4/10 al mattino indica che il carico dell\'ultima seduta ha raggiunto il limite attuale di tolleranza dei capi prossimali del gastrocnemio. NON aumentare la durata delle frazioni di corsa in questa settimana: mantieni il rapporto Corsa/Cammino attuale, verifica la cadenza (≥174 spm) ed esegui l\'isometria pre-corsa.'
+        };
+      } else {
+        return {
+          status: 'GREEN',
+          nrs: latestNrs,
+          persists,
+          badge: 'VERDE • ADATTAMENTO FISIOLOGICO OTTIMALE',
+          headline: 'Carico tendineo ben tollerato: via libera alla progressione settimanale prevista.',
+          prescription: 'La risposta a 24 ore al test provocativo (estensione del ginocchio associata a dorsiflessione della caviglia) è inferiore o uguale a 2/10 senza rigidità residua. La meccanotrasduzione sta stimolando efficacemente il rimodellamento tendineo: procedi con il programma previsto.'
+        };
+      }
+    }
+
+    // Morning Check-in slider preview
+    function updateMorningNrsPreview(val) {
+      const n = Number(val);
+      const disp = document.getElementById('quickNrsValueDisplay');
+      disp.textContent = `NRS: ${n} / 10`;
+      if (n <= 2) {
+        disp.className = "mono-num text-lg font-extrabold px-3 py-1 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 self-start sm:self-center";
+      } else if (n <= 4) {
+        disp.className = "mono-num text-lg font-extrabold px-3 py-1 rounded-lg bg-amber-100 text-amber-800 border border-amber-300 self-start sm:self-center";
+      } else {
+        disp.className = "mono-num text-lg font-extrabold px-3 py-1 rounded-lg bg-rose-100 text-rose-800 border border-rose-300 self-start sm:self-center";
+      }
+    }
+
+    function recordMorningCheckin() {
+      const nrs = Number(document.getElementById('morningNrsSlider').value);
+      const persists = document.getElementById('morningRigidityCheck').checked;
+      const now = new Date();
+      const dateStr = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')} Sett.${appState.activeWeek}`;
+
+      appState.morningCheckins.push({
+        date: dateStr,
+        nrs,
+        persists,
+        week: appState.activeWeek
+      });
+
+      document.getElementById('morningRigidityCheck').checked = false;
+      saveState();
+      renderAll();
+      showToast(`Test mattutino a 24h registrato (NRS ${nrs}/10). Semaforo aggiornato.`);
+    }
+
+    function clearCheckinHistory() {
+      appState.morningCheckins = [{ date: "Basale", nrs: 1, persists: false, week: appState.activeWeek }];
+      saveState();
+      renderAll();
+      showToast("Storico test mattutini ripristinato al valore basale.");
+    }
+
+    // Render Full UI
+    function renderAll() {
+      document.getElementById('mobileWeekBadge').textContent = `Sett. ${appState.activeWeek}/20`;
+      document.getElementById('dashboardWeekSelect').value = appState.activeWeek;
+
+      renderTrafficLight();
+      renderDashboardKPIs();
+      renderDashboardActiveWeekSessions();
+      renderCheckinHistory();
+      renderLoadTrendChart();
+      renderProgram20Weeks();
+      renderPacesSection();
+    }
+
+    function renderTrafficLight() {
+      const evalRes = evaluateClinicalTrafficLight();
+      const box = document.getElementById('trafficLightBox');
+      const lGreen = document.getElementById('light-green');
+      const lYellow = document.getElementById('light-yellow');
+      const lRed = document.getElementById('light-red');
+      const badge = document.getElementById('semaphoreStatusBadge');
+      const lastBadge = document.getElementById('semaphoreLastNrsBadge');
+      const headline = document.getElementById('semaphoreHeadline');
+      const presc = document.getElementById('semaphorePrescription');
+
+      lastBadge.textContent = `Ultimo Test 24h: NRS ${evalRes.nrs}/10${evalRes.persists ? ' (>24h)' : ''}`;
+      headline.textContent = evalRes.headline;
+      presc.textContent = evalRes.prescription;
+      badge.textContent = evalRes.badge;
+
+      if (evalRes.status === 'GREEN') {
+        box.className = "rounded-xl p-4 sm:p-5 border-2 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-emerald-50/80 border-emerald-500";
+        badge.className = "px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wide bg-emerald-600 text-white";
+        lGreen.className = "w-6 h-6 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399] transition-all";
+        lYellow.className = "w-6 h-6 rounded-full bg-amber-500/20 transition-all";
+        lRed.className = "w-6 h-6 rounded-full bg-rose-500/20 transition-all";
+      } else if (evalRes.status === 'YELLOW') {
+        box.className = "rounded-xl p-4 sm:p-5 border-2 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-amber-50/90 border-amber-500";
+        badge.className = "px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wide bg-amber-600 text-white";
+        lGreen.className = "w-6 h-6 rounded-full bg-emerald-400/20 transition-all";
+        lYellow.className = "w-6 h-6 rounded-full bg-amber-400 shadow-[0_0_12px_#fbbf24] transition-all";
+        lRed.className = "w-6 h-6 rounded-full bg-rose-500/20 transition-all";
+      } else {
+        box.className = "rounded-xl p-4 sm:p-5 border-2 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-rose-50/90 border-rose-600";
+        badge.className = "px-2.5 py-0.5 rounded-md text-xs font-bold uppercase tracking-wide bg-rose-600 text-white";
+        lGreen.className = "w-6 h-6 rounded-full bg-emerald-400/20 transition-all";
+        lYellow.className = "w-6 h-6 rounded-full bg-amber-500/20 transition-all";
+        lRed.className = "w-6 h-6 rounded-full bg-rose-500 shadow-[0_0_14px_#f43f5e] transition-all";
+      }
+    }
+
+    function renderDashboardKPIs() {
+      const wObj = WEEKS_BLUEPRINT.find(w => w.week === Number(appState.activeWeek)) || WEEKS_BLUEPRINT[0];
+      const paces = getCalculatedPaces();
+
+      // Global completion across all 100 sessions
+      let totalCompleted = 0;
+      WEEKS_BLUEPRINT.forEach(w => {
+        w.runs.forEach(r => { if (getSessionObject(w.week, r, true).completed) totalCompleted++; });
+        w.rehab.forEach(rh => { if (getSessionObject(w.week, rh, false).completed) totalCompleted++; });
+      });
+      const globalPct = Math.round((totalCompleted / 100) * 100);
+
+      document.getElementById('kpiCurrentWeek').textContent = `Settimana ${wObj.week}`;
+      document.getElementById('kpiPhaseBadge').textContent = `Fase ${wObj.phase}${wObj.isDeload ? ' • Scarico' : ''}`;
+      const phaseTitles = {
+        1: "Ricondizionamento tissutale e meccanotrasduzione (Run-Walk)",
+        2: "Sviluppo aerobico fondamentale (Zona 2) e Stiffness HSR",
+        3: "Consolidamento specifico 10 km e Tapering"
+      };
+      document.getElementById('kpiPhaseTitle').textContent = phaseTitles[wObj.phase];
+      document.getElementById('kpiTotalProgressPct').textContent = `${globalPct}% (${totalCompleted}/100)`;
+      document.getElementById('kpiTotalProgressBar').style.width = `${globalPct}%`;
+
+      // Active week metrics
+      let plannedKm = 0;
+      let actualKm = 0;
+      let plannedSrpe = 0;
+      let actualSrpe = 0;
+      let doneCount = 0;
+      let nrs24List = [];
+
+      wObj.runs.forEach(r => {
+        const s = getSessionObject(wObj.week, r, true);
+        plannedKm += s.plannedKm;
+        plannedSrpe += (s.plannedMin * s.plannedRpe);
+        if (s.completed) {
+          actualKm += s.actualKm;
+          actualSrpe += (s.actualMin * s.rpe);
+          doneCount++;
+          nrs24List.push(s.nrs24h);
+        }
+      });
+
+      wObj.rehab.forEach(rh => {
+        const s = getSessionObject(wObj.week, rh, false);
+        plannedSrpe += (s.plannedMin * s.plannedRpe);
+        if (s.completed) {
+          actualSrpe += (s.actualMin * s.rpe);
+          doneCount++;
+          nrs24List.push(s.nrs24h);
+        }
+      });
+
+      const kmPct = plannedKm > 0 ? Math.min(100, Math.round((actualKm / plannedKm) * 100)) : 0;
+      document.getElementById('kpiWeeklyKmActual').textContent = actualKm.toFixed(1);
+      document.getElementById('kpiWeeklyKmPlanned').textContent = plannedKm.toFixed(1);
+      document.getElementById('kpiWeeklySessionsDone').textContent = `${doneCount} di 5 sedute completate (Corsa + Rehab)`;
+      document.getElementById('kpiWeeklyKmPct').textContent = `${kmPct}%`;
+      document.getElementById('kpiWeeklyKmBar').style.width = `${kmPct}%`;
+
+      document.getElementById('kpiWeeklySrpe').textContent = actualSrpe;
+      document.getElementById('kpiPlannedSrpe').textContent = plannedSrpe;
+      document.getElementById('kpiRunWalkRatio').textContent = wObj.ratioLabel;
+      document.getElementById('kpiCurrentZ2Pace').textContent = paces.z2Range;
+
+      // Average NRS 24h
+      let avgNrs = 1.0;
+      if (nrs24List.length > 0) {
+        avgNrs = nrs24List.reduce((a, b) => a + b, 0) / nrs24List.length;
+      } else if (appState.morningCheckins.length > 0) {
+        avgNrs = appState.morningCheckins[appState.morningCheckins.length - 1].nrs;
+      }
+      document.getElementById('kpiAvgNrs24').textContent = avgNrs.toFixed(1);
+      const trendBadge = document.getElementById('kpiPainTrendBadge');
+      if (avgNrs <= 2.0) {
+        trendBadge.textContent = "Ottimale (≤2)";
+        trendBadge.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800";
+      } else if (avgNrs <= 4.0) {
+        trendBadge.textContent = "Attenzione (3-4)";
+        trendBadge.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
+      } else {
+        trendBadge.textContent = "Allerta (≥5)";
+        trendBadge.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800";
+      }
+    }
+
+    function renderDashboardActiveWeekSessions() {
+      const wObj = WEEKS_BLUEPRINT.find(w => w.week === Number(appState.activeWeek)) || WEEKS_BLUEPRINT[0];
+      document.getElementById('activeWeekCardTitle').textContent = `Sedute della Settimana ${wObj.week}`;
+      document.getElementById('activeWeekCardSubtitle').textContent = wObj.title;
+      document.getElementById('activeWeekClinicalTip').innerHTML = `<strong>Focus Biomeccanico Sett. ${wObj.week}:</strong> ${wObj.clinicalFocus}`;
+
+      const listEl = document.getElementById('dashboardWeekSessionsList');
+      listEl.innerHTML = '';
+
+      const allSessions = [
+        ...wObj.runs.map(r => getSessionObject(wObj.week, r, true)),
+        ...wObj.rehab.map(rh => getSessionObject(wObj.week, rh, false))
+      ];
+
+      allSessions.forEach(s => {
+        const row = document.createElement('div');
+        row.className = `p-3 rounded-xl border transition flex items-center justify-between gap-3 ${
+          s.completed ? 'bg-emerald-50/60 border-emerald-300' : 'bg-slate-50/70 hover:bg-slate-100/80 border-slate-200'
+        }`;
+
+        const badgeColor = s.isRun ? 'bg-sky-100 text-sky-800 border-sky-200' : 'bg-indigo-100 text-indigo-800 border-indigo-200';
+
+        row.innerHTML = `
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            <button onclick="quickToggleSession('${s.key}', ${wObj.week}, '${s.code}', ${s.isRun})"
+              title="Spunta rapido completamento"
+              class="w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition ${
+                s.completed ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-white border-slate-300 hover:border-sky-500'
+              }">
+              ${s.completed ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
+            </button>
+            <div class="min-w-0 flex-1 cursor-pointer" onclick="openSessionModal(${wObj.week}, '${s.code}', ${s.isRun})">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${badgeColor}">${s.code}</span>
+                <span class="text-xs font-bold text-slate-900 truncate">${s.title}</span>
+              </div>
+              <div class="text-[11px] text-slate-500 font-mono mt-0.5">
+                ${s.isRun ? `${s.actualKm} km • ` : ''}${s.actualMin} min • RPE ${s.rpe} ${s.completed ? `• <span class="text-emerald-700 font-semibold">NRS 24h: ${s.nrs24h}/10</span>` : ''}
+              </div>
+            </div>
+          </div>
+          <button onclick="openSessionModal(${wObj.week}, '${s.code}', ${s.isRun})"
+            class="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-semibold shrink-0 transition">
+            Registra
+          </button>
+        `;
+        listEl.appendChild(row);
+      });
+    }
+
+    function renderCheckinHistory() {
+      const container = document.getElementById('checkinHistoryList');
+      container.innerHTML = '';
+      const items = [...appState.morningCheckins].reverse().slice(0, 10);
+
+      items.forEach(item => {
+        let colorCls = 'bg-emerald-50 border-emerald-200 text-emerald-800';
+        if (item.nrs >= 5 || item.persists) colorCls = 'bg-rose-50 border-rose-200 text-rose-800';
+        else if (item.nrs >= 3) colorCls = 'bg-amber-50 border-amber-200 text-amber-800';
+
+        const pill = document.createElement('div');
+        pill.className = `px-3 py-1.5 rounded-xl border text-xs shrink-0 flex items-center gap-2 ${colorCls}`;
+        pill.innerHTML = `
+          <span class="font-medium">${item.date}</span>
+          <span class="font-mono font-extrabold">NRS ${item.nrs}/10</span>
+        `;
+        container.appendChild(pill);
+      });
+    }
+
+    // Render SVG Chart for 20-Week Volume & 24h NRS Pain Trend
+    function renderLoadTrendChart() {
+      const container = document.getElementById('loadTrendChartContainer');
+      if (!container) return;
+
+      const width = 660;
+      const height = 230;
+      const padLeft = 36;
+      const padRight = 36;
+      const padTop = 20;
+      const padBottom = 32;
+      const plotW = width - padLeft - padRight;
+      const plotH = height - padTop - padBottom;
+
+      const maxKm = 28; // max weekly km ~26 km
+      const colW = plotW / 20;
+
+      let barsSvg = '';
+      let nrsPoints = [];
+
+      WEEKS_BLUEPRINT.forEach((w, idx) => {
+        let plannedKm = 0;
+        let actualKm = 0;
+        let weekNrsValues = [];
+
+        w.runs.forEach(r => {
+          const s = getSessionObject(w.week, r, true);
+          plannedKm += s.plannedKm;
+          if (s.completed) {
+            actualKm += s.actualKm;
+            weekNrsValues.push(s.nrs24h);
+          }
+        });
+
+        w.rehab.forEach(rh => {
+          const s = getSessionObject(w.week, rh, false);
+          if (s.completed) weekNrsValues.push(s.nrs24h);
+        });
+
+        const xCenter = padLeft + (idx * colW) + (colW / 2);
+        const barW = colW * 0.62;
+        const xBar = xCenter - (barW / 2);
+
+        const plannedH = Math.min(plotH, (plannedKm / maxKm) * plotH);
+        const yPlanned = padTop + plotH - plannedH;
+
+        const actualH = Math.min(plotH, (actualKm / maxKm) * plotH);
+        const yActual = padTop + plotH - actualH;
+
+        const isCurrent = w.week === Number(appState.activeWeek);
+
+        // Planned bar
+        barsSvg += `
+          <g class="cursor-pointer" onclick="changeActiveWeek(${w.week})">
+            <rect x="${xBar.toFixed(1)}" y="${yPlanned.toFixed(1)}" width="${barW.toFixed(1)}" height="${plannedH.toFixed(1)}"
+              rx="3" fill="${isCurrent ? '#e0f2fe' : '#f1f5f9'}" stroke="${isCurrent ? '#0284c7' : '#cbd5e1'}" stroke-width="${isCurrent ? '1.5' : '1'}" />
+            ${actualKm > 0 ? `<rect x="${xBar.toFixed(1)}" y="${yActual.toFixed(1)}" width="${barW.toFixed(1)}" height="${actualH.toFixed(1)}" rx="3" fill="#0284c7" />` : ''}
+            <text x="${xCenter.toFixed(1)}" y="${height - 10}" text-anchor="middle" font-size="9.5" font-family="JetBrains Mono"
+              font-weight="${isCurrent ? '700' : '400'}" fill="${isCurrent ? '#0284c7' : '#64748b'}">S${w.week}</text>
+            <text x="${xCenter.toFixed(1)}" y="${(yPlanned - 4).toFixed(1)}" text-anchor="middle" font-size="8" font-family="JetBrains Mono" fill="#64748b">${plannedKm.toFixed(0)}</text>
+          </g>
+        `;
+
+        if (weekNrsValues.length > 0) {
+          const avgNrs = weekNrsValues.reduce((a, b) => a + b, 0) / weekNrsValues.length;
+          const yNrs = padTop + plotH - ((avgNrs / 10) * plotH);
+          nrsPoints.push({ x: xCenter, y: yNrs, val: avgNrs.toFixed(1) });
+        }
+      });
+
+      let nrsLineSvg = '';
+      if (nrsPoints.length > 1) {
+        const dPath = nrsPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+        nrsLineSvg += `<path d="${dPath}" fill="none" stroke="#f43f5e" stroke-width="2" />`;
+      }
+      nrsPoints.forEach(p => {
+        nrsLineSvg += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="4" fill="#f43f5e" stroke="#ffffff" stroke-width="1.5" />`;
+      });
+
+      // Safe threshold line NRS = 2/10
+      const ySafeNrs = padTop + plotH - ((2 / 10) * plotH);
+
+      container.innerHTML = `
+        <svg viewBox="0 0 ${width} ${height}" class="w-full h-full select-none">
+          <!-- Horizontal Grid Lines -->
+          <line x1="${padLeft}" y1="${padTop}" x2="${width - padRight}" y2="${padTop}" stroke="#f1f5f9" stroke-width="1" />
+          <line x1="${padLeft}" y1="${padTop + plotH / 2}" x2="${width - padRight}" y2="${padTop + plotH / 2}" stroke="#f1f5f9" stroke-width="1" />
+          <line x1="${padLeft}" y1="${padTop + plotH}" x2="${width - padRight}" y2="${padTop + plotH}" stroke="#cbd5e1" stroke-width="1.5" />
+
+          <!-- Safe NRS 2/10 Reference Line -->
+          <line x1="${padLeft}" y1="${ySafeNrs.toFixed(1)}" x2="${width - padRight}" y2="${ySafeNrs.toFixed(1)}" stroke="#10b981" stroke-width="1" stroke-dasharray="4 4" />
+          <text x="${width - padRight + 4}" y="${(ySafeNrs + 3).toFixed(1)}" font-size="8.5" font-family="JetBrains Mono" fill="#059669">NRS 2</text>
+
+          <!-- Left Y-Axis Labels (km) -->
+          <text x="${padLeft - 6}" y="${padTop + 4}" text-anchor="end" font-size="9" font-family="JetBrains Mono" fill="#94a3b8">28km</text>
+          <text x="${padLeft - 6}" y="${padTop + plotH / 2 + 3}" text-anchor="end" font-size="9" font-family="JetBrains Mono" fill="#94a3b8">14km</text>
+          <text x="${padLeft - 6}" y="${padTop + plotH}" text-anchor="end" font-size="9" font-family="JetBrains Mono" fill="#94a3b8">0</text>
+
+          ${barsSvg}
+          ${nrsLineSvg}
+        </svg>
+      `;
+    }
+
+    // Filter Phase in 20 Weeks Program Tab
+    function filterProgramPhase(phase) {
+      appState.phaseFilter = phase;
+      ['all', 1, 2, 3].forEach(p => {
+        const btn = document.getElementById(`phaseFilter-${p}`);
+        if (String(p) === String(phase)) {
+          btn.className = "phase-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-900 text-white transition";
+        } else {
+          btn.className = "phase-filter-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition";
+        }
+      });
+      renderProgram20Weeks();
+    }
+
+    // Render all 20 weeks in Tab 2
+    function renderProgram20Weeks() {
+      const container = document.getElementById('weeksProgramContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const paces = getCalculatedPaces();
+
+      const filteredWeeks = WEEKS_BLUEPRINT.filter(w =>
+        appState.phaseFilter === 'all' ? true : w.phase === Number(appState.phaseFilter)
+      );
+
+      filteredWeeks.forEach(w => {
+        let plannedKm = 0;
+        let actualKm = 0;
+        let doneCount = 0;
+
+        const runObjs = w.runs.map(r => {
+          const s = getSessionObject(w.week, r, true);
+          plannedKm += s.plannedKm;
+          if (s.completed) {
+            actualKm += s.actualKm;
+            doneCount++;
+          }
+          return s;
+        });
+
+        const rehabObjs = w.rehab.map(rh => {
+          const s = getSessionObject(w.week, rh, false);
+          if (s.completed) doneCount++;
+          return s;
+        });
+
+        const isCurrent = w.week === Number(appState.activeWeek);
+        const phaseColors = {
+          1: 'bg-sky-100 text-sky-800 border-sky-200',
+          2: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+          3: 'bg-emerald-100 text-emerald-800 border-emerald-200'
+        };
+
+        const card = document.createElement('div');
+        card.className = `bg-white rounded-2xl border transition shadow-sm overflow-hidden ${
+          isCurrent ? 'border-sky-500 ring-2 ring-sky-500/20' : 'border-slate-200'
+        }`;
+
+        const runsHtml = runObjs.map(s => {
+          let dynamicPaceHint = paces.z2Range;
+          if (s.zone.includes('RG') || s.zone.includes('GARA')) dynamicPaceHint = paces.rgFormatted;
+          else if (s.zone.includes('Z3')) dynamicPaceHint = paces.z3Range;
+
+          return `
+            <div class="p-3.5 rounded-xl border transition flex flex-col justify-between gap-2 ${
+              s.completed ? 'bg-emerald-50/70 border-emerald-300' : 'bg-slate-50/60 hover:bg-slate-100/70 border-slate-200'
+            }">
+              <div>
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <button onclick="quickToggleSession('${s.key}', ${w.week}, '${s.code}', true)"
+                      class="w-5 h-5 rounded-md border-2 flex items-center justify-center transition ${
+                        s.completed ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-white border-slate-300 hover:border-sky-500'
+                      }">
+                      ${s.completed ? '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
+                    </button>
+                    <span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-sky-100 text-sky-800">${s.code} • ${s.zone}</span>
+                  </div>
+                  <span class="text-xs font-mono font-bold text-slate-700">${s.actualKm} km • ${s.actualMin}'</span>
+                </div>
+                <h4 class="text-sm font-bold text-slate-900 mt-1.5">${s.title}</h4>
+                <p class="text-xs text-slate-600 mt-1 leading-relaxed">${s.desc}</p>
+              </div>
+              <div class="pt-2 border-t border-slate-200/70 flex items-center justify-between text-[11px]">
+                <span class="font-mono text-sky-700 font-semibold">Passo: ${dynamicPaceHint}</span>
+                <button onclick="openSessionModal(${w.week}, '${s.code}', true)" class="font-bold text-slate-700 hover:text-sky-600 underline">
+                  ${s.completed ? `NRS 24h: ${s.nrs24h}/10 (Modifica)` : 'Registra Dati'}
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        const rehabHtml = rehabObjs.map(s => `
+          <div class="p-3 rounded-xl border transition flex items-center justify-between gap-3 ${
+            s.completed ? 'bg-emerald-50/70 border-emerald-300' : 'bg-indigo-50/40 hover:bg-indigo-50/80 border-indigo-200/70'
+          }">
+            <div class="flex items-start gap-2.5 min-w-0">
+              <button onclick="quickToggleSession('${s.key}', ${w.week}, '${s.code}', false)"
+                class="mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition ${
+                  s.completed ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-white border-slate-300 hover:border-indigo-500'
+                }">
+                ${s.completed ? '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
+              </button>
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800">${s.code} • Condizionamento Tendineo</span>
+                  <span class="text-xs font-bold text-slate-900">${s.title}</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-0.5">${s.desc}</p>
+              </div>
+            </div>
+            <button onclick="openSessionModal(${w.week}, '${s.code}', false)" class="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 shrink-0">
+              Dettagli
+            </button>
+          </div>
+        `).join('');
+
+        card.innerHTML = `
+          <div class="px-5 py-4 bg-slate-50 border-b border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3 flex-wrap">
+              <span class="mono-num text-base font-extrabold text-slate-900 bg-white px-3 py-1 rounded-xl border border-slate-300 shadow-2xs">
+                SETT. ${w.week}
+              </span>
+              <span class="text-xs font-bold px-2.5 py-0.5 rounded-md border ${phaseColors[w.phase]}">
+                Fase ${w.phase}${w.isDeload ? ' • SCARICO' : ''}
+              </span>
+              <h3 class="text-sm sm:text-base font-bold text-slate-900">${w.title}</h3>
+            </div>
+            <div class="flex items-center gap-3 self-end sm:self-center">
+              <span class="text-xs font-mono text-slate-600">
+                Volume: <strong>${actualKm.toFixed(1)}</strong> / ${plannedKm.toFixed(1)} km • Sedute: <strong>${doneCount}/5</strong>
+              </span>
+              ${!isCurrent ? `
+                <button onclick="changeActiveWeek(${w.week}); showToast('Settimana ${w.week} impostata come settimana attiva.')"
+                  class="px-3 py-1 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold transition">
+                  Imposta Attiva
+                </button>
+              ` : `
+                <span class="px-2.5 py-1 rounded-lg bg-sky-100 text-sky-800 font-bold text-xs border border-sky-300">
+                  Settimana Attiva
+                </span>
+              `}
+            </div>
+          </div>
+
+          <div class="p-5 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+              ${runsHtml}
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+              ${rehabHtml}
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // Quick toggle session completion
+    function quickToggleSession(key, weekNum, code, isRun) {
+      const wObj = WEEKS_BLUEPRINT.find(w => w.week === weekNum);
+      const list = isRun ? wObj.runs : wObj.rehab;
+      const bp = list.find(x => x.code === code);
+      const current = getSessionObject(weekNum, bp, isRun);
+
+      appState.sessionsData[key] = {
+        completed: !current.completed,
+        actualKm: current.actualKm,
+        actualMin: current.actualMin,
+        rpe: current.rpe,
+        nrsDuring: current.nrsDuring,
+        nrs24h: current.nrs24h,
+        notes: current.notes
+      };
+
+      saveState();
+      renderAll();
+      showToast(appState.sessionsData[key].completed
+        ? `Seduta ${code} (Settimana ${weekNum}) completata!`
+        : `Seduta ${code} (Settimana ${weekNum}) riportata a da svolgere.`);
+    }
+
+    // Open Modal to Edit/Record Session Details
+    function openSessionModal(weekNum, code, isRun) {
+      const wObj = WEEKS_BLUEPRINT.find(w => w.week === weekNum);
+      const list = isRun ? wObj.runs : wObj.rehab;
+      const bp = list.find(x => x.code === code);
+      const s = getSessionObject(weekNum, bp, isRun);
+
+      currentEditingSessionKey = { key: s.key, weekNum, code, isRun };
+
+      document.getElementById('modalSessionWeekBadge').textContent = `Settimana ${weekNum} • ${s.code} (${s.zone})`;
+      document.getElementById('modalSessionTitle').textContent = s.title;
+      document.getElementById('modalSessionDescription').textContent = s.desc;
+
+      document.getElementById('modalInputKm').value = s.actualKm;
+      document.getElementById('modalInputKm').disabled = !isRun;
+      document.getElementById('modalInputMin').value = s.actualMin;
+      document.getElementById('modalInputRpe').value = s.rpe;
+      document.getElementById('modalInputNrsDuring').value = s.nrsDuring;
+      document.getElementById('modalInputNrs24h').value = s.nrs24h;
+      document.getElementById('modalInputNotes').value = s.notes;
+      document.getElementById('modalInputCompleted').checked = s.completed ? true : true; // default check when opening to log
+
+      updateModalSrpePreview();
+      document.getElementById('sessionModal').classList.remove('hidden');
+    }
+
+    function updateModalSrpePreview() {
+      const min = Number(document.getElementById('modalInputMin').value) || 0;
+      const rpe = Number(document.getElementById('modalInputRpe').value) || 0;
+      document.getElementById('modalCalculatedSrpe').textContent = `Carico sRPE: ${min * rpe} UA`;
+    }
+
+    document.getElementById('modalInputMin').addEventListener('input', updateModalSrpePreview);
+    document.getElementById('modalInputRpe').addEventListener('input', updateModalSrpePreview);
+
+    function closeSessionModal() {
+      document.getElementById('sessionModal').classList.add('hidden');
+      currentEditingSessionKey = null;
+    }
+
+    function saveSessionFromModal() {
+      if (!currentEditingSessionKey) return;
+      const { key, weekNum, code } = currentEditingSessionKey;
+
+      const actualKm = Number(document.getElementById('modalInputKm').value) || 0;
+      const actualMin = Number(document.getElementById('modalInputMin').value) || 0;
+      const rpe = Math.min(10, Math.max(1, Number(document.getElementById('modalInputRpe').value) || 3));
+      const nrsDuring = Math.min(10, Math.max(0, Number(document.getElementById('modalInputNrsDuring').value) || 0));
+      const nrs24h = Math.min(10, Math.max(0, Number(document.getElementById('modalInputNrs24h').value) || 0));
+      const notes = document.getElementById('modalInputNotes').value.trim();
+      const completed = document.getElementById('modalInputCompleted').checked;
+
+      appState.sessionsData[key] = {
+        completed,
+        actualKm,
+        actualMin,
+        rpe,
+        nrsDuring,
+        nrs24h,
+        notes
+      };
+
+      // Also sync morning check-in if session is completed so Traffic Light reflects latest 24h NRS
+      if (completed) {
+        appState.morningCheckins.push({
+          date: `Post S${weekNum}-${code}`,
+          nrs: nrs24h,
+          persists: nrs24h >= 5,
+          week: weekNum
+        });
+        document.getElementById('morningNrsSlider').value = nrs24h;
+        updateMorningNrsPreview(nrs24h);
+      }
+
+      saveState();
+      closeSessionModal();
+      renderAll();
+      showToast(`Dati seduta ${code} (Settimana ${weekNum}) salvati con successo.`);
+    }
+
+    // Pace Calculator & VAM Section
+    function setPreset10k(min, sec) {
+      document.getElementById('target10kMin').value = min;
+      document.getElementById('target10kSec').value = sec;
+      recalculatePaces();
+    }
+
+    function recalculatePaces() {
+      const min = Math.min(90, Math.max(30, Number(document.getElementById('target10kMin').value) || 55));
+      const sec = Math.min(59, Math.max(0, Number(document.getElementById('target10kSec').value) || 0));
+      appState.target10kMinutes = min;
+      appState.target10kSeconds = sec;
+      saveState();
+      renderAll();
+      showToast(`Ritmi ricalcolati per obiettivo 10K in ${min}:${sec < 10 ? '0' : ''}${sec}.`);
+    }
+
+    function renderPacesSection() {
+      const p = getCalculatedPaces();
+      document.getElementById('calcRgDisplay').textContent = p.rgFormatted;
+      document.getElementById('calcVamDisplay').textContent = `${p.vamKmh} km/h (${p.vamPace})`;
+      document.getElementById('calcVo2Display').textContent = `${p.vo2max} ml/kg/min`;
+
+      const zones = [
+        {
+          name: "Cammino Attivo (Fase Run-Walk)",
+          badge: "bg-slate-100 text-slate-700",
+          pace: "8:30 – 9:30 /km",
+          rpe: "1–2 / 10",
+          desc: "Dissipazione dell'isteresi viscoelastica tendinea tra le frazioni di corsa senza far scendere la frequenza cardiaca."
+        },
+        {
+          name: "Zona 1 • Fondo Lento Rigenerante",
+          badge: "bg-emerald-100 text-emerald-800",
+          pace: p.z1Range,
+          rpe: "2–3 / 10",
+          desc: "Riscaldamento, defaticamento e settimane di scarico. Impatto meccanico minimale sulla fossa poplitea."
+        },
+        {
+          name: "Zona 2 • Fondo Lento Aerobico (Base)",
+          badge: "bg-sky-100 text-sky-800",
+          pace: p.z2Range,
+          rpe: "3–4 / 10",
+          desc: "Cuore del programma (80% dei km): biogenesi mitocondriale, capillarizzazione e adattamento tendineo progressivo."
+        },
+        {
+          name: "Zona 3 • Fondo Medio Controllato",
+          badge: "bg-indigo-100 text-indigo-800",
+          pace: p.z3Range,
+          rpe: "5–6 / 10",
+          desc: "Introdotto dalla Settimana 10: innalzamento della soglia aerobica mantenendo cadenza ≥174 spm."
+        },
+        {
+          name: "Zona 4 • Ritmo Gara 10 km (RG)",
+          badge: "bg-amber-100 text-amber-900",
+          pace: p.rgRange,
+          rpe: "7–8 / 10",
+          desc: "Specifico Fase 3 (Settimane 15–20): economia di corsa e tenuta alla velocità di gara."
+        }
+      ];
+
+      const tbody = document.getElementById('pacesTableBody');
+      tbody.innerHTML = zones.map(z => `
+        <tr class="hover:bg-slate-50/80">
+          <td class="py-3 pr-3 font-semibold text-slate-900">
+            <span class="inline-block px-2 py-0.5 rounded text-xs font-bold ${z.badge}">${z.name}</span>
+          </td>
+          <td class="py-3 px-3 font-mono font-bold text-slate-900 whitespace-nowrap">${z.pace}</td>
+          <td class="py-3 px-3 font-mono text-xs text-slate-600 whitespace-nowrap">${z.rpe}</td>
+          <td class="py-3 pl-3 text-xs text-slate-600 leading-relaxed">${z.desc}</td>
+        </tr>
+      `).join('');
+    }
+
+    // =========================================================
+    // REHAB TIMERS & WEB AUDIO API METRONOME
+    // =========================================================
+
+    // 1. Isometric 5x45s Timer
+    let isoInterval = null;
+    let isoState = { running: false, set: 1, isWork: true, secLeft: 45 };
+
+    function toggleIsoTimer() {
+      const btn = document.getElementById('isoTimerBtn');
+      if (isoState.running) {
+        clearInterval(isoInterval);
+        isoState.running = false;
+        btn.textContent = "Riprendi Timer";
+        return;
+      }
+      isoState.running = true;
+      btn.textContent = "Pausa Timer";
+      playBeep(660, 0.12);
+
+      isoInterval = setInterval(() => {
+        isoState.secLeft--;
+        if (isoState.secLeft < 0) {
+          if (isoState.isWork) {
+            if (isoState.set >= 5) {
+              playBeep(880, 0.3);
+              resetIsoTimer();
+              showToast("Sessione Isometrica 5×45s completata! Ottimo stimolo analgesico.");
+              return;
+            }
+            isoState.isWork = false;
+            isoState.secLeft = 120; // 2 min rest
+            playBeep(440, 0.2);
+          } else {
+            isoState.isWork = true;
+            isoState.set++;
+            isoState.secLeft = 45;
+            playBeep(660, 0.2);
+          }
+        }
+        renderIsoTimerUI();
+      }, 1000);
+    }
+
+    function resetIsoTimer() {
+      clearInterval(isoInterval);
+      isoState = { running: false, set: 1, isWork: true, secLeft: 45 };
+      document.getElementById('isoTimerBtn').textContent = "Avvia Timer 5×45s";
+      renderIsoTimerUI();
+    }
+
+    function renderIsoTimerUI() {
+      const statusEl = document.getElementById('isoTimerStatus');
+      const dispEl = document.getElementById('isoTimerDisplay');
+      const barEl = document.getElementById('isoTimerBar');
+
+      const m = Math.floor(isoState.secLeft / 60);
+      const s = isoState.secLeft % 60;
+      dispEl.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+      if (isoState.isWork) {
+        statusEl.textContent = `LAVORO ISOMETRICO: Serie ${isoState.set} di 5 (Piano Neutro)`;
+        statusEl.className = "text-xs font-bold uppercase text-sky-700";
+        const pct = (isoState.secLeft / 45) * 100;
+        barEl.style.width = `${pct}%`;
+        barEl.className = "h-full bg-sky-600 transition-all duration-300";
+      } else {
+        statusEl.textContent = `RECUPERO: Fine Serie ${isoState.set}/5 (Rilassa il polpaccio)`;
+        statusEl.className = "text-xs font-bold uppercase text-emerald-700";
+        const pct = (isoState.secLeft / 120) * 100;
+        barEl.style.width = `${pct}%`;
+        barEl.className = "h-full bg-emerald-500 transition-all duration-300";
+      }
+    }
+
+    // 2. HSR 3s Up / 3s Down Pacer
+    let hsrInterval = null;
+    let hsrState = { running: false, elapsedMs: 0, reps: 0 };
+
+    function toggleHsrPacer() {
+      const btn = document.getElementById('hsrPacerBtn');
+      if (hsrState.running) {
+        clearInterval(hsrInterval);
+        hsrState.running = false;
+        btn.textContent = "Riprendi Pacer 3s/3s";
+        return;
+      }
+      hsrState.running = true;
+      btn.textContent = "Pausa Pacer";
+      playBeep(580, 0.08);
+
+      hsrInterval = setInterval(() => {
+        hsrState.elapsedMs += 100;
+        const cycleMs = hsrState.elapsedMs % 6000; // 6000ms = 3s concentric + 3s eccentric
+        const currentRep = Math.floor(hsrState.elapsedMs / 6000);
+
+        if (currentRep > hsrState.reps) {
+          hsrState.reps = currentRep;
+          if (hsrState.reps >= 10) {
+            playBeep(880, 0.25);
+            resetHsrPacer();
+            showToast("Serie HSR da 10 ripetizioni lente (3s/3s) completata!");
+            return;
+          }
+          playBeep(580, 0.06);
+        }
+
+        const labelEl = document.getElementById('hsrPacerLabel');
+        const barEl = document.getElementById('hsrPacerBar');
+        document.getElementById('hsrRepCounter').textContent = `Rip: ${hsrState.reps + 1} / 10`;
+
+        if (cycleMs < 3000) {
+          const pct = (cycleMs / 3000) * 100;
+          labelEl.textContent = "SALITA CONCENTRICA LENTA (3s ↑)";
+          barEl.style.width = `${pct}%`;
+        } else {
+          const pct = ((6000 - cycleMs) / 3000) * 100;
+          labelEl.textContent = "DISCESA ECCENTRICA FINO AL PIANO (3s ↓)";
+          barEl.style.width = `${pct}%`;
+        }
+      }, 100);
+    }
+
+    function resetHsrPacer() {
+      clearInterval(hsrInterval);
+      hsrState = { running: false, elapsedMs: 0, reps: 0 };
+      document.getElementById('hsrPacerBtn').textContent = "Avvia Pacer 3s/3s";
+      document.getElementById('hsrPacerLabel').textContent = "Guida Tempo HSR (3s Concentrica / 3s Eccentrica)";
+      document.getElementById('hsrRepCounter').textContent = "Rip: 0 / 10";
+      document.getElementById('hsrPacerBar').style.width = "0%";
+    }
+
+    // 3. Neurodynamic Slider Coordinator
+    let sliderInterval = null;
+    let sliderPhase = 0;
+
+    function toggleSliderAnimation() {
+      const btn = document.getElementById('sliderAnimBtn');
+      const txt = document.getElementById('sliderCoordText');
+      if (sliderInterval) {
+        clearInterval(sliderInterval);
+        sliderInterval = null;
+        btn.textContent = "Simula Ritmo";
+        txt.innerHTML = "Ginocchio ESTESO &rarr; Piede in PLANTIFLESSIONE";
+        return;
+      }
+      btn.textContent = "Ferma Guida";
+      sliderInterval = setInterval(() => {
+        sliderPhase = 1 - sliderPhase;
+        if (sliderPhase === 0) {
+          txt.innerHTML = "1) Ginocchio <strong>ESTESO</strong> &rarr; Caviglia in <strong>PLANTIFLESSIONE</strong> (Punta giù)";
+        } else {
+          txt.innerHTML = "2) Ginocchio <strong>FLESSO</strong> &rarr; Caviglia in <strong>DORSIFLESSIONE</strong> (Punta su)";
+        }
+      }, 2200);
+    }
+
+    // 4. Web Audio API Cadence Metronome
+    let audioCtx = null;
+    let metronomeTimer = null;
+    let metronomePlaying = false;
+    let metronomeBpm = 174;
+    let metronomeStepToggle = false;
+
+    function ensureAudioContext() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playBeep(freq = 800, duration = 0.04) {
+      try {
+        ensureAudioContext();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // Audio context blocked or unsupported
+      }
+    }
+
+    function updateMetronomeBpm(val) {
+      metronomeBpm = Number(val);
+      document.getElementById('metronomeBpmDisplay').textContent = metronomeBpm;
+      if (metronomePlaying) {
+        clearInterval(metronomeTimer);
+        startMetronomeLoop();
+      }
+    }
+
+    function startMetronomeLoop() {
+      const intervalMs = (60 / metronomeBpm) * 1000;
+      metronomeTimer = setInterval(() => {
+        metronomeStepToggle = !metronomeStepToggle;
+        playBeep(metronomeStepToggle ? 920 : 740, 0.035);
+        const orb = document.getElementById('metronomeVisualOrb');
+        const side = document.getElementById('metronomeFootSide');
+        side.textContent = metronomeStepToggle ? 'DX' : 'SX';
+        orb.classList.remove('metronome-beat');
+        void orb.offsetWidth;
+        orb.classList.add('metronome-beat');
+      }, intervalMs);
+    }
+
+    function toggleMetronome() {
+      const btnText = document.getElementById('metronomePlayText');
+      if (metronomePlaying) {
+        clearInterval(metronomeTimer);
+        metronomePlaying = false;
+        btnText.textContent = "Avvia";
+        document.getElementById('metronomeFootSide').textContent = "SX/DX";
+      } else {
+        metronomePlaying = true;
+        btnText.textContent = "Stop";
+        startMetronomeLoop();
+      }
+    }
+
+    // =========================================================
+    // JSON BACKUP EXPORT / IMPORT & RESET
+    // =========================================================
+    function exportBackup() {
+      const dataStr = JSON.stringify(appState, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const dateStr = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `KineRun_10K_Backup_${dateStr}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("Backup JSON esportato correttamente.");
+    }
+
+    function importBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && typeof imported === 'object' && imported.sessionsData) {
+            appState = { ...appState, ...imported };
+            saveState();
+            renderAll();
+            showToast("Backup JSON importato e ripristinato con successo!");
+          } else {
+            showToast("File JSON non valido per KineRun 10K.", true);
+          }
+        } catch (err) {
+          showToast("Errore durante la lettura del file JSON.", true);
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function openResetModal() {
+      document.getElementById('resetConfirmModal').classList.remove('hidden');
+    }
+
+    function closeResetModal() {
+      document.getElementById('resetConfirmModal').classList.add('hidden');
+    }
+
+    function confirmFullReset() {
+      localStorage.removeItem(STORAGE_KEY);
+      seedInitialDefaultState();
+      closeResetModal();
+      renderAll();
+      showToast("Dati ripristinati alla configurazione iniziale.");
+    }
+
+    // Toast notification helper
+    function showToast(msg, isError = false) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `px-4 py-3 rounded-xl shadow-lg border text-xs font-semibold flex items-center gap-2 pointer-events-auto transition-all duration-300 ${
+        isError ? 'bg-rose-900 text-white border-rose-700' : 'bg-slate-900 text-white border-slate-700'
+      }`;
+      toast.innerHTML = `
+        <span class="w-2 h-2 rounded-full ${isError ? 'bg-rose-400' : 'bg-sky-400'}"></span>
+        <span>${msg}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3200);
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
